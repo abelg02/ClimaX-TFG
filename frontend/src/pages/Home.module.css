@@ -1,0 +1,125 @@
+/* Home.module.css */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #007bff 0%, #00b4ff 100%);
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+    position: relative;
+}
+
+.weatherCard {
+    padding: 25px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.chartContainer {
+    padding: 25px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.hourlyForecastContainer {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.hourItem {
+    min-width: 80px;
+    padding: 15px 10px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hourItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.forecastDay {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    background-color: white;
+    transition: background-color 0.2s ease;
+}
+
+.forecastDay:hover {
+    background-color: #f8f9fa;
+}
+
+.forecastDay:last-child {
+    border-bottom: none;
+}
+
+.errorMessage {
+    padding: 15px;
+    background-color: #ffebee;
+    color: #d32f2f;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.searchForm {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    gap: 10px;
+    position: relative;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 12px 15px 12px 40px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.searchButton {
+    padding: 12px 25px;
+    background-color: #ffffff;
+    color: #007bff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.searchButton:disabled {
+    background-color: #cccccc;
+    color: #666;
+}
