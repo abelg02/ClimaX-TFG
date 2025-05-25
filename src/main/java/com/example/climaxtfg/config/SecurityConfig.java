@@ -1,5 +1,3 @@
-// src/main/java/com/example/climaxtfg/config/SecurityConfig.java
-
 package com.example.climaxtfg.config;
 
 import org.springframework.context.annotation.Bean;
