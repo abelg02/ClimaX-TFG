@@ -1,24 +1,20 @@
 // src/main/java/com/example/climaxtfg/controllers/WeatherController.java
-package com.example.climaxtfg.controllers;
+package com.example.climaxtfg.controller;
 
 import com.example.climaxtfg.services.WeatherService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/weather")
+@CrossOrigin(origins = "*") // Asegúrate de configurar correctamente para producción
 public class WeatherController {
 
-    private final WeatherService weatherService;
-
     @Autowired
-    public WeatherController(WeatherService weatherService) {
-        this.weatherService = weatherService;
-    }
+    private WeatherService weatherService;
 
-    @GetMapping("/forecast")
-    public ResponseEntity<String> getWeatherForecast(@RequestParam String city) {
-        return weatherService.getWeatherForecast(city);
+    @GetMapping("/{city}")
+    public String getWeather(@PathVariable String city) {
+        return weatherService.getWeatherForCity(city);
     }
 }
