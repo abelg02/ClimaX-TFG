@@ -18,6 +18,7 @@ public class WeatherService {
         this.restTemplate = restTemplate;
     }
 
+    // Modifica el método getWeatherForCity para incluir AQI
     public String getWeatherForCity(String city) {
         String url = UriComponentsBuilder
                 .fromHttpUrl("https://api.weatherapi.com/v1/forecast.json")
@@ -25,7 +26,7 @@ public class WeatherService {
                 .queryParam("q", city)
                 .queryParam("days", 7)
                 .queryParam("lang", "es")
-                .queryParam("aqi", "no")
+                .queryParam("aqi", "yes")
                 .queryParam("alerts", "no")
                 .toUriString();
 
