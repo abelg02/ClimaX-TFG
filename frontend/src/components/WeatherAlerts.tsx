@@ -190,8 +190,8 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
                   onChange={(e) => updateAlert(alert.id, 'condition', e.target.value as ConditionType)}
                   className={styles.alertSelect}
                 >
-                  <option value="above">Mayor que</option>
-                  <option value="below">Menor que</option>
+                  <option value="above">Mayor de</option>
+                  <option value="below">Menor de</option>
                 </select>
 
                 <input
