@@ -1,21 +1,29 @@
+// frontend/src/components/WeatherAlerts.tsx
 import { useState, useEffect } from 'react';
 import styles from '../pages/Home.module.css';
 
-type AlertType = 'rain' | 'temp' | 'wind' | 'air';
+type AlertType = 'rain' | 'temp' | 'wind' | 'humidity';
 type ConditionType = 'above' | 'below';
 
-type Alert = {
+interface Alert {
   id: string;
   type: AlertType;
   condition: ConditionType;
   value: number;
   active: boolean;
   notified?: boolean;
-};
+}
 
 const DEFAULT_ALERTS: Alert[] = [
   { id: '1', type: 'rain', condition: 'above', value: 70, active: true },
-  { id: '2', type: 'temp', condition: 'above', value: 30, active: false },
+  { id: '2', type: 'temp', condition: 'above', value: 30, active: true },
+];
+
+const ALERT_OPTIONS = [
+  { value: 'rain', label: 'Lluvia', unit: '%', min: 0, max: 100, step: 5 },
+  { value: 'temp', label: 'Temperatura', unit: '°C', min: -20, max: 50, step: 1 },
+  { value: 'wind', label: 'Viento', unit: 'km/h', min: 0, max: 100, step: 5 },
+  { value: 'humidity', label: 'Humedad', unit: '%', min: 0, max: 100, step: 5 },
 ];
 
 export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
@@ -23,22 +31,29 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
     const saved = localStorage.getItem('weatherAlerts');
     return saved ? JSON.parse(saved) : DEFAULT_ALERTS;
   });
+  const [isAdding, setIsAdding] = useState(false);
+  const [newAlert, setNewAlert] = useState<Omit<Alert, 'id' | 'notified'>>({
+    type: 'temp',
+    condition: 'above',
+    value: 25,
+    active: true
+  });
 
   // Guardar en localStorage
   useEffect(() => {
     localStorage.setItem('weatherAlerts', JSON.stringify(alerts));
   }, [alerts]);
 
-  // Función para mostrar notificaciones
+  // Mostrar notificaciones
   const showNotification = (message: string) => {
     if (!("Notification" in window)) return;
 
     if (Notification.permission === "granted") {
-      new Notification("Alerta ClimaX", { body: message });
+      new Notification("⚠️ Alerta ClimaX", { body: message });
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then(permission => {
         if (permission === "granted") {
-          new Notification("Alerta ClimaX", { body: message });
+          new Notification("⚠️ Alerta ClimaX", { body: message });
         }
       });
     }
@@ -53,41 +68,55 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
 
       let conditionMet = false;
       let message = '';
+      let currentValue = 0;
 
       switch(alert.type) {
         case 'rain':
-          const rainChance = weatherData.forecast?.forecastday[0]?.day?.daily_chance_of_rain || 0;
+          currentValue = weatherData.forecast?.forecastday[0]?.day?.daily_chance_of_rain || 0;
           conditionMet = alert.condition === 'above'
-            ? rainChance > alert.value
-            : rainChance < alert.value;
-          message = `Probabilidad de lluvia: ${rainChance}%`;
+            ? currentValue > alert.value
+            : currentValue < alert.value;
+          message = `Probabilidad de lluvia: ${currentValue}% (Umbral: ${alert.condition === 'above' ? '>' : '<'} ${alert.value}%)`;
           break;
 
         case 'temp':
-          const temp = weatherData.current?.temp_c;
-          conditionMet = temp && (
-            alert.condition === 'above'
-              ? temp > alert.value
-              : temp < alert.value
-          );
-          message = `Temperatura actual: ${temp}°C`;
+          currentValue = weatherData.current?.temp_c || 0;
+          conditionMet = alert.condition === 'above'
+            ? currentValue > alert.value
+            : currentValue < alert.value;
+          message = `Temperatura actual: ${currentValue}°C (Umbral: ${alert.condition === 'above' ? '>' : '<'} ${alert.value}°C)`;
+          break;
+
+        case 'wind':
+          currentValue = weatherData.current?.wind_kph || 0;
+          conditionMet = alert.condition === 'above'
+            ? currentValue > alert.value
+            : currentValue < alert.value;
+          message = `Velocidad del viento: ${currentValue} km/h (Umbral: ${alert.condition === 'above' ? '>' : '<'} ${alert.value} km/h)`;
+          break;
+
+        case 'humidity':
+          currentValue = weatherData.current?.humidity || 0;
+          conditionMet = alert.condition === 'above'
+            ? currentValue > alert.value
+            : currentValue < alert.value;
+          message = `Humedad: ${currentValue}% (Umbral: ${alert.condition === 'above' ? '>' : '<'} ${alert.value}%)`;
           break;
       }
 
       if (conditionMet && !alert.notified) {
-        showNotification(`¡Alerta! ${message}`);
+        showNotification(`¡Alerta de ${alert.type}! ${message}`);
         return true;
       }
       return false;
     });
   };
 
-  // Ejecutar comprobación cuando cambian los datos
+  // Comprobar alertas cuando cambian los datos
   useEffect(() => {
     if (weatherData) {
       const triggeredAlerts = checkAlerts();
 
-      // Marcar como notificadas
       if (triggeredAlerts.length > 0) {
         setAlerts(alerts.map(alert =>
           triggeredAlerts.some(a => a.id === alert.id)
@@ -98,17 +127,16 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
     }
   }, [weatherData]);
 
-  // Añadir nueva alerta (mejorado)
-  const addNewAlert = () => {
-    const newAlert: Alert = {
+  // Añadir nueva alerta
+  const addAlert = () => {
+    const alertToAdd = {
+      ...newAlert,
       id: Date.now().toString(),
-      type: 'temp',
-      condition: 'above',
-      value: 25,
-      active: true,
       notified: false
     };
-    setAlerts([...alerts, newAlert]);
+    setAlerts([...alerts, alertToAdd]);
+    setIsAdding(false);
+    setNewAlert({ type: 'temp', condition: 'above', value: 25, active: true });
   };
 
   // Eliminar alerta
@@ -117,9 +145,9 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
   };
 
   // Actualizar alerta
-  const updateAlert = (id: string, updates: Partial<Alert>) => {
+  const updateAlert = (id: string, field: keyof Alert, value: any) => {
     setAlerts(alerts.map(alert =>
-      alert.id === id ? { ...alert, ...updates } : alert
+      alert.id === id ? { ...alert, [field]: value, notified: false } : alert
     ));
   };
 
@@ -132,56 +160,154 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
         <span>⚠️</span> Alertas Meteorológicas
       </h3>
 
-      <div className={styles.alertSettings}>
-        {alerts.map(alert => (
-          <div key={alert.id} className={styles.alertItem}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
-              <input
-                type="checkbox"
-                checked={alert.active}
-                onChange={() => updateAlert(alert.id, { active: !alert.active, notified: false })}
-              />
-              <span>
-                {`${alert.type === 'rain' ? 'Lluvia >' : 'Temp. '}${alert.condition === 'above' ? '>' : '<'} ${alert.value}${alert.type === 'rain' ? '%' : '°C'}`}
-              </span>
+      <div className={styles.alertList}>
+        {alerts.map(alert => {
+          const option = ALERT_OPTIONS.find(o => o.value === alert.type);
+          return (
+            <div key={alert.id} className={styles.alertItem}>
+              <div className={styles.alertControls}>
+                <input
+                  type="checkbox"
+                  checked={alert.active}
+                  onChange={(e) => updateAlert(alert.id, 'active', e.target.checked)}
+                  className={styles.alertCheckbox}
+                />
+
+                <select
+                  value={alert.type}
+                  onChange={(e) => updateAlert(alert.id, 'type', e.target.value as AlertType)}
+                  className={styles.alertSelect}
+                >
+                  {ALERT_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={alert.condition}
+                  onChange={(e) => updateAlert(alert.id, 'condition', e.target.value as ConditionType)}
+                  className={styles.alertSelect}
+                >
+                  <option value="above">Mayor que</option>
+                  <option value="below">Menor que</option>
+                </select>
+
+                <input
+                  type="number"
+                  value={alert.value}
+                  onChange={(e) => updateAlert(alert.id, 'value', Number(e.target.value))}
+                  min={option?.min}
+                  max={option?.max}
+                  step={option?.step}
+                  className={styles.alertInput}
+                />
+
+                <span className={styles.alertUnit}>{option?.unit}</span>
+              </div>
+
+              <button
+                onClick={() => removeAlert(alert.id)}
+                className={styles.removeAlertButton}
+                title="Eliminar alerta"
+              >
+                ×
+              </button>
             </div>
-            <button
-              onClick={() => removeAlert(alert.id)}
-              className={styles.removeAlertButton}
+          );
+        })}
+      </div>
+
+      {isAdding ? (
+        <div className={styles.newAlertForm}>
+          <div className={styles.formRow}>
+            <label>Tipo:</label>
+            <select
+              value={newAlert.type}
+              onChange={(e) => setNewAlert({...newAlert, type: e.target.value as AlertType})}
+              className={styles.alertSelect}
             >
-              ×
+              {ALERT_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.formRow}>
+            <label>Condición:</label>
+            <select
+              value={newAlert.condition}
+              onChange={(e) => setNewAlert({...newAlert, condition: e.target.value as ConditionType})}
+              className={styles.alertSelect}
+            >
+              <option value="above">Mayor que</option>
+              <option value="below">Menor que</option>
+            </select>
+          </div>
+
+          <div className={styles.formRow}>
+            <label>Valor:</label>
+            <input
+              type="number"
+              value={newAlert.value}
+              onChange={(e) => setNewAlert({...newAlert, value: Number(e.target.value)})}
+              min={ALERT_OPTIONS.find(o => o.value === newAlert.type)?.min}
+              max={ALERT_OPTIONS.find(o => o.value === newAlert.type)?.max}
+              step={ALERT_OPTIONS.find(o => o.value === newAlert.type)?.step}
+              className={styles.alertInput}
+            />
+            <span className={styles.alertUnit}>
+              {ALERT_OPTIONS.find(o => o.value === newAlert.type)?.unit}
+            </span>
+          </div>
+
+          <div className={styles.formButtons}>
+            <button
+              onClick={addAlert}
+              className={styles.confirmButton}
+            >
+              Confirmar
+            </button>
+            <button
+              onClick={() => setIsAdding(false)}
+              className={styles.cancelButton}
+            >
+              Cancelar
             </button>
           </div>
-        ))}
-      </div>
-
-      <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
-        <button
-          onClick={addNewAlert}
-          className={styles.addAlertButton}
-        >
-          + Añadir alerta
-        </button>
-
-        <button
-          onClick={() => setAlerts(DEFAULT_ALERTS)}
-          className={styles.resetAlertsButton}
-        >
-          Restablecer
-        </button>
-      </div>
+        </div>
+      ) : (
+        <div className={styles.alertActions}>
+          <button
+            onClick={() => setIsAdding(true)}
+            className={styles.addAlertButton}
+          >
+            + Añadir nueva alerta
+          </button>
+          <button
+            onClick={() => setAlerts(DEFAULT_ALERTS)}
+            className={styles.resetAlertsButton}
+          >
+            Restablecer alertas
+          </button>
+        </div>
+      )}
 
       {activeAlerts.length > 0 && (
         <div className={styles.activeAlerts}>
-          <h4>Alertas activas ahora:</h4>
+          <h4>🚨 Alertas activas:</h4>
           <ul>
-            {activeAlerts.map(alert => (
-              <li key={alert.id}>
-                {alert.type === 'rain'
-                  ? `Lluvia: ${weatherData.forecast.forecastday[0].day.daily_chance_of_rain}%`
-                  : `Temp: ${weatherData.current.temp_c}°C`}
-              </li>
-            ))}
+            {activeAlerts.map(alert => {
+              const option = ALERT_OPTIONS.find(o => o.value === alert.type);
+              return (
+                <li key={alert.id}>
+                  {option?.label}: {alert.condition === 'above' ? '>' : '<'} {alert.value}{option?.unit}
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

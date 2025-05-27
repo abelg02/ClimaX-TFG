@@ -7,7 +7,7 @@ import { WeeklyForecast } from '../components/WeeklyForecast';
 import { useWeather } from '../context/WeatherContext';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { AirQuality } from '../components/AirQuality';
-import { UVIndex } from '../components/UVIndex'; // 👈 no olvides importar esto
+import { UVIndex } from '../components/UVIndex';
 import { WeatherAlerts } from '../components/WeatherAlerts';
 
 export const Home = () => {
