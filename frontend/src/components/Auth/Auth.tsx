@@ -1,6 +1,7 @@
 // frontend/src/components/Auth/Auth.tsx
 import { useState } from 'react';
 import styles from '../../pages/Home.module.css';
+import { addUser, getUserByEmail } from '../../services/db';
 
 export const Auth = ({ onLogin }: { onLogin: () => void }) => {
     const [isLogin, setIsLogin] = useState(true);
@@ -9,31 +10,29 @@ export const Auth = ({ onLogin }: { onLogin: () => void }) => {
     const [name, setName] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
         if (isLogin) {
-            // Lógica de login
-            const users = JSON.parse(localStorage.getItem('weatherUsers') || '[]');
-            const user = users.find((u: any) => u.email === email && u.password === password);
+            // Lógica de login con IndexedDB
+            const user = await getUserByEmail(email);
 
-            if (user) {
+            if (user && user.password === password) {
                 localStorage.setItem('weatherCurrentUser', JSON.stringify(user));
                 onLogin();
             } else {
                 setError('Credenciales incorrectas');
             }
         } else {
-            // Lógica de registro
+            // Lógica de registro con IndexedDB
             if (!name || !email || !password) {
                 setError('Todos los campos son obligatorios');
                 return;
             }
 
-            const users = JSON.parse(localStorage.getItem('weatherUsers') || '[]');
-
-            if (users.some((u: any) => u.email === email)) {
+            const existingUser = await getUserByEmail(email);
+            if (existingUser) {
                 setError('El email ya está registrado');
                 return;
             }
@@ -42,10 +41,10 @@ export const Auth = ({ onLogin }: { onLogin: () => void }) => {
                 id: Date.now().toString(),
                 name,
                 email,
-                password // En un caso real, esto debería estar encriptado
+                password // ⚠️ En producción, esto debería estar encriptado
             };
 
-            localStorage.setItem('weatherUsers', JSON.stringify([...users, newUser]));
+            await addUser(newUser);
             localStorage.setItem('weatherCurrentUser', JSON.stringify(newUser));
             onLogin();
         }
