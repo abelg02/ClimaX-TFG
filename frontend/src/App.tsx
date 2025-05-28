@@ -1,48 +1,44 @@
-// frontend/src/App.tsx
 import { useState, useEffect } from 'react';
 import { Home } from './pages/Home';
 import { Auth } from './components/Auth/Auth';
+import { onAuthStateChange, auth } from './services/firebase';
+import { SettingsMenu } from './components/SettingsMenu';
+
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Comprobar si hay un usuario logueado al cargar la app
-        const user = localStorage.getItem('weatherCurrentUser');
-        if (user) {
-            setIsAuthenticated(true);
-        }
+        const unsubscribe = onAuthStateChange((user) => {
+            setIsAuthenticated(!!user);
+            setLoading(false);
+        });
+        return unsubscribe;
     }, []);
 
     const handleLogin = () => {
         setIsAuthenticated(true);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem('weatherCurrentUser');
-        setIsAuthenticated(false);
+    const handleLogout = async () => {
+        try {
+            await auth.signOut();
+            setIsAuthenticated(false);
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
     };
+
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
 
     return (
         <div className="App">
             {isAuthenticated ? (
                 <>
-                    <button
-                        onClick={handleLogout}
-                        style={{
-                            position: 'absolute',
-                            top: '10px',
-                            right: '10px',
-                            padding: '5px 10px',
-                            background: '#ff4444',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        Cerrar sesión
-                    </button>
+                    <SettingsMenu onLogout={handleLogout} />
                     <Home />
                 </>
             ) : (

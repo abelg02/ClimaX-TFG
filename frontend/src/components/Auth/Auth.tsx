@@ -1,7 +1,7 @@
 // frontend/src/components/Auth/Auth.tsx
 import { useState } from 'react';
 import styles from '../../pages/Home.module.css';
-import { addUser, getUserByEmail } from '../../services/db';
+import { registerUser, loginUser } from '../../services/firebase';
 
 export const Auth = ({ onLogin }: { onLogin: () => void }) => {
     const [isLogin, setIsLogin] = useState(true);
@@ -14,39 +14,35 @@ export const Auth = ({ onLogin }: { onLogin: () => void }) => {
         e.preventDefault();
         setError('');
 
-        if (isLogin) {
-            // Lógica de login con IndexedDB
-            const user = await getUserByEmail(email);
-
-            if (user && user.password === password) {
-                localStorage.setItem('weatherCurrentUser', JSON.stringify(user));
-                onLogin();
+        try {
+            if (isLogin) {
+                await loginUser(email, password);
             } else {
-                setError('Credenciales incorrectas');
+                await registerUser(email, password);
+                await saveUserData(user.uid, name);
             }
-        } else {
-            // Lógica de registro con IndexedDB
-            if (!name || !email || !password) {
-                setError('Todos los campos son obligatorios');
-                return;
-            }
-
-            const existingUser = await getUserByEmail(email);
-            if (existingUser) {
-                setError('El email ya está registrado');
-                return;
-            }
-
-            const newUser = {
-                id: Date.now().toString(),
-                name,
-                email,
-                password // ⚠️ En producción, esto debería estar encriptado
-            };
-
-            await addUser(newUser);
-            localStorage.setItem('weatherCurrentUser', JSON.stringify(newUser));
             onLogin();
+        } catch (err: any) {
+            setError(getFirebaseError(err.code));
+        }
+    };
+
+    const getFirebaseError = (code: string) => {
+        switch(code) {
+            case 'auth/invalid-email':
+                return 'Email no válido';
+            case 'auth/user-disabled':
+                return 'Usuario deshabilitado';
+            case 'auth/user-not-found':
+                return 'Usuario no encontrado';
+            case 'auth/wrong-password':
+                return 'Contraseña incorrecta';
+            case 'auth/email-already-in-use':
+                return 'El email ya está registrado';
+            case 'auth/weak-password':
+                return 'La contraseña es demasiado débil';
+            default:
+                return 'Error al autenticar';
         }
     };
 
