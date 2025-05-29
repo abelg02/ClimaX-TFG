@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import styles from './Home.module.css';
 import { SearchBar } from '../components/SearchBar';
 import { CurrentWeather } from '../components/CurrentWeather';
@@ -9,9 +10,25 @@ import { ErrorMessage } from '../components/ErrorMessage';
 import { AirQuality } from '../components/AirQuality';
 import { UVIndex } from '../components/UVIndex';
 import { WeatherAlerts } from '../components/WeatherAlerts';
+import { getWeatherStyles } from '../utils/weatherStyles';
 
 export const Home = () => {
     const { weatherData, loading, error, fetchWeather } = useWeather();
+
+    // Aplicar estilos dinámicos basados en el clima
+    useEffect(() => {
+        if (weatherData) {
+            const weatherCode = weatherData.current.condition.code;
+            const isDay = weatherData.current.is_day;
+            const weatherStyles = getWeatherStyles(weatherCode, isDay);
+
+            // Aplicar estilos al documento
+            document.documentElement.style.setProperty('--bg-gradient', weatherStyles.background);
+            document.documentElement.style.setProperty('--text-color', weatherStyles.textColor);
+            document.documentElement.style.setProperty('--card-bg', weatherStyles.cardBg);
+        }
+    }, [weatherData]);
+
 
     return (
         <div className={styles.container}>
