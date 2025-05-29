@@ -9,6 +9,7 @@ type WeatherContextType = {
     loading: boolean;
     error: string | null;
     fetchWeather: (city: string) => Promise<void>;
+    resetWeather: () => void; // Nueva función
 };
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
@@ -35,8 +36,15 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    // Nueva función para resetear el estado
+    const resetWeather = () => {
+        setWeatherData(null);
+        setLoading(false);
+        setError(null);
+    };
+
     return (
-        <WeatherContext.Provider value={{ weatherData, loading, error, fetchWeather }}>
+        <WeatherContext.Provider value={{ weatherData, loading, error, fetchWeather, resetWeather }}>
             {children}
         </WeatherContext.Provider>
     );
