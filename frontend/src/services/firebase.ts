@@ -29,9 +29,19 @@ export const registerUser = (email: string, password: string) => {
   return createUserWithEmailAndPassword(auth, email, password);
 };
 
-export const loginUser = (email: string, password: string) => {
-  return signInWithEmailAndPassword(auth, email, password);
+export const loginUser = async (email: string, password: string) => {
+  try {
+    await setPersistence(auth, browserSessionPersistence);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("Inicio de sesión exitoso:", userCredential.user);
+    return userCredential;
+  } catch (error: any) {
+    console.error("Error al iniciar sesión:", error.code, error.message);
+    throw error;
+  }
 };
+
+
 
 export const onAuthStateChange = (callback: (user: User | null) => void) => {
   return onAuthStateChanged(auth, callback);
