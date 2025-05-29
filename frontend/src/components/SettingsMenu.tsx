@@ -1,23 +1,34 @@
-// frontend/src/components/SettingsMenu.tsx
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from '../pages/Home.module.css';
 
 export const SettingsMenu = ({ onLogout }: { onLogout: () => void }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null); // Referencia al contenedor del menú
+
+    // Cierra el menú si se hace clic fuera de él
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
 
     return (
-        <div style={{ position: 'relative' }}>
+        <div ref={menuRef} className={styles.settingsContainer}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '1.5rem',
-                    cursor: 'pointer'
-                }}
+                className={styles.settingsButton}
             >
                 ⚙️
             </button>
@@ -30,7 +41,6 @@ export const SettingsMenu = ({ onLogout }: { onLogout: () => void }) => {
                     >
                         Cerrar sesión
                     </button>
-                    {/* Puedes añadir más opciones aquí */}
                 </div>
             )}
         </div>

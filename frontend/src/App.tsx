@@ -3,6 +3,10 @@ import { Home } from './pages/Home';
 import { Auth } from './components/Auth/Auth';
 import { onAuthStateChange, auth } from './services/firebase';
 import { SettingsMenu } from './components/SettingsMenu';
+import './App.css'; // <-- Añade este import
+import styles from './pages/Home.module.css'; // <-- Añade este import
+
+
 
 
 function App() {
@@ -35,17 +39,17 @@ function App() {
     }
 
     return (
-        <div className="App">
-            {isAuthenticated ? (
-                <>
-                    <SettingsMenu onLogout={handleLogout} />
-                    <Home />
-                </>
-            ) : (
-                <Auth onLogin={handleLogin} />
-            )}
-        </div>
-    );
+            <div className="App">
+                {isAuthenticated ? (
+                    <div className={styles.appContainer}>
+                        <Home />
+                        <SettingsMenu onLogout={handleLogout} />
+                    </div>
+                ) : (
+                    <Auth onLogin={handleLogin} />
+                )}
+            </div>
+        );
 }
 
 export default App;

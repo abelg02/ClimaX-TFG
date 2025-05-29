@@ -476,6 +476,38 @@
     z-index: 100;
 }
 
+/* Añade al final de Home.module.css */
+.settingsContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.settingsButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+.settingsButton:hover {
+    transform: rotate(90deg);
+}
+
+.settingsMenu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 10px;
+    min-width: 150px;
+}
+
 .settingsMenuItem {
     display: block;
     width: 100%;
@@ -485,8 +517,10 @@
     text-align: left;
     cursor: pointer;
     color: #333;
+    border-radius: 4px;
 }
 
 .settingsMenuItem:hover {
     background: #f5f5f5;
 }
+
