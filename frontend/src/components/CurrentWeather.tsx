@@ -1,4 +1,5 @@
 // frontend/src/components/CurrentWeather.tsx
+import { useNavigate } from 'react-router-dom';
 import styles from '../pages/Home.module.css';
 
 type CurrentWeatherProps = {
@@ -26,6 +27,8 @@ type CurrentWeatherProps = {
 };
 
 export const CurrentWeather = ({ data }: CurrentWeatherProps) => {
+    const navigate = useNavigate();
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleString('es-ES', {
@@ -37,17 +40,25 @@ export const CurrentWeather = ({ data }: CurrentWeatherProps) => {
         });
     };
 
-    return (
-        <div className={styles.weatherCard}>
-            <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '1.5rem' }}>🌡️</div>
+    const handleRegionClick = () => {
+        navigate(`/map/${data.location.region}`);
+    };
 
-            <div style={{ marginBottom: '20px' }}>
-                <h2 style={{ margin: '0 0 5px 0', fontSize: '1.8rem', fontWeight: '600' }}>
-                    {data.location.name}, {data.location.country}
-                </h2>
-                <p style={{ margin: '0', color: '#666', fontSize: '0.9rem' }}>
-                    {data.location.region} • {formatDate(data.current.last_updated)}
-                </p>
+    return (
+            <div className={styles.weatherCard}>
+                <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '1.5rem' }}>🌡️</div>
+
+                <div style={{ marginBottom: '20px' }}>
+                    <h2 style={{ margin: '0 0 5px 0', fontSize: '1.8rem', fontWeight: '600' }}>
+                        {data.location.name}, {data.location.country}
+                    </h2>
+                    <p style={{ margin: '0', color: '#666', fontSize: '0.9rem' }}>
+                        <span
+                            onClick={handleRegionClick}
+                            style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                        {data.location.region}
+                    </span> • {formatDate(data.current.last_updated)}
+                    </p>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
