@@ -41,7 +41,20 @@ export const CurrentWeather = ({ data }: CurrentWeatherProps) => {
     };
 
     const handleRegionClick = () => {
-        navigate(`/map/${data.location.region}`);
+      // Normalizamos el nombre de la región para que coincida con nuestras claves
+      let comunidad = data.location.region;
+
+      // Algunos mapeos especiales para casos conocidos
+      const regionMappings: Record<string, string> = {
+        'Valencia': 'Comunidad Valenciana',
+        'Barcelona': 'Cataluña',
+        'Sevilla': 'Andalucía',
+        // Añadir más mapeos según sea necesario
+      };
+
+      comunidad = regionMappings[comunidad] || comunidad;
+
+      navigate(`/map/${encodeURIComponent(comunidad)}`);
     };
 
     return (
