@@ -768,3 +768,25 @@
     color: var(--text-color, #666);
     opacity: 0.8;
 }
+
+
+/* En Home.module.css */
+.backButton {
+    background: none;
+    border: none;
+    color: var(--text-color, #007bff);
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.backButton:hover {
+    background: rgba(0, 123, 255, 0.1);
+    transform: translateX(-3px);
+}

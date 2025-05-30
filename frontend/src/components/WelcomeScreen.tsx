@@ -1,11 +1,22 @@
-// frontend/src/components/WelcomeScreen.tsx
 import styles from '../pages/Home.module.css';
 
-export const WelcomeScreen = ({ onCityClick }: { onCityClick: (city: string) => void }) => {
+type WelcomeScreenProps = {
+    onCityClick: (city: string) => void;
+    showReset?: boolean;
+    onReset?: () => void;
+};
+
+export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: WelcomeScreenProps) => {
     const popularCities = ['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Bilbao', 'Málaga'];
 
     return (
         <div className={styles.welcomeContainer}>
+            {showReset && (
+                <button onClick={onReset} className={styles.backButton}>
+                    ← Volver al inicio
+                </button>
+            )}
+
             <div className={styles.welcomeCard}>
                 <h2>👋 ¡Bienvenido a Climax!</h2>
                 <p>Busca una ciudad para ver el pronóstico meteorológico completo.</p>

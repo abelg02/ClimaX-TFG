@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+// frontend/src/pages/Home.tsx
+import { useEffect, useState } from 'react';
 import styles from './Home.module.css';
 import { SearchBar } from '../components/SearchBar';
 import { CurrentWeather } from '../components/CurrentWeather';
@@ -14,63 +15,77 @@ import { getWeatherStyles } from '../utils/weatherStyles';
 import { WelcomeScreen } from '../components/WelcomeScreen';
 
 export const Home = () => {
-    const { weatherData, loading, error, fetchWeather } = useWeather();
+    const { weatherData, loading, error, fetchWeather, resetWeather } = useWeather();
+    const [showWelcome, setShowWelcome] = useState(!weatherData);
 
-    // Aplicar estilos dinámicos basados en el clima
+    const handleReset = () => {
+        resetWeather();
+        setShowWelcome(true);
+    };
+
     useEffect(() => {
         if (weatherData) {
             const weatherCode = weatherData.current.condition.code;
             const isDay = weatherData.current.is_day;
             const weatherStyles = getWeatherStyles(weatherCode, isDay);
 
-            // Aplicar estilos al documento
             document.documentElement.style.setProperty('--bg-gradient', weatherStyles.background);
             document.documentElement.style.setProperty('--text-color', weatherStyles.textColor);
             document.documentElement.style.setProperty('--card-bg', weatherStyles.cardBg);
         }
     }, [weatherData]);
 
-
     return (
-            <div className={styles.container}>
-                <header className={styles.header}>
-                    <div style={{ position: 'absolute', top: '15px', left: '20px', fontSize: '1.8rem' }}>🌤</div>
-                    <h1 style={{ margin: '0 0 20px 0', fontSize: '2.2rem', fontWeight: '600' }}>ClimaX</h1>
-                    <SearchBar onSearch={fetchWeather} loading={loading} />
-                </header>
+        <div className={styles.container}>
+            <header className={styles.header}>
+                <div style={{ position: 'absolute', top: '15px', left: '20px', fontSize: '1.8rem' }}>🌤</div>
+                <h1 style={{ margin: '0 0 20px 0', fontSize: '2.2rem', fontWeight: '600' }}>ClimaX</h1>
+                <SearchBar onSearch={fetchWeather} loading={loading} />
+            </header>
 
-                {error && <ErrorMessage message={error} />}
+            {error && <ErrorMessage message={error} />}
 
-                {weatherData ? (
-                    <main>
-                        <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
-                            <div>
-                                <CurrentWeather data={weatherData} />
+            {weatherData && !showWelcome ? (
+                <main>
+                    <button onClick={handleReset} className={styles.backButton}>
+                        ← Volver al inicio
+                    </button>
 
-                                {weatherData?.current?.air_quality && (
-                                    <AirQuality aqi={weatherData.current.air_quality['us-epa-index']} />
-                                )}
+                    <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
+                        <div>
+                            <CurrentWeather data={weatherData} />
 
-                                {weatherData?.current?.uv && (
-                                    <UVIndex uv={weatherData.current.uv} />
-                                )}
-                            </div>
+                            {weatherData?.current?.air_quality && (
+                                <AirQuality aqi={weatherData.current.air_quality['us-epa-index']} />
+                            )}
 
-                            <TemperatureChart
-                                hourlyData={weatherData.forecast.forecastday[0].hour.map((hour) => ({
-                                    time: `${new Date(hour.time).getHours()}h`,
-                                    temp: hour.temp_c
-                                }))}
-                            />
-                        </section>
+                            {weatherData?.current?.uv && (
+                                <UVIndex uv={weatherData.current.uv} />
+                            )}
+                        </div>
 
-                        <HourlyForecast hours={weatherData.forecast.forecastday[0].hour} />
-                        <WeeklyForecast days={weatherData.forecast.forecastday} />
-                        <WeatherAlerts weatherData={weatherData} />
-                    </main>
-                ) : (
-                    <WelcomeScreen onCityClick={fetchWeather} />
-                )}
-            </div>
-        );
-    };
+                        <TemperatureChart
+                            hourlyData={weatherData.forecast.forecastday[0].hour.map((hour) => ({
+                                time: `${new Date(hour.time).getHours()}h`,
+                                temp: hour.temp_c
+                            }))}
+                        />
+                    </section>
+
+                    <HourlyForecast hours={weatherData.forecast.forecastday[0].hour} />
+                    <WeeklyForecast days={weatherData.forecast.forecastday} />
+                    <WeatherAlerts weatherData={weatherData} />
+                </main>
+            ) : (
+                <WelcomeScreen
+                    onCityClick={(city) => {
+                        fetchWeather(city);
+                        setShowWelcome(false);
+                    }}
+                    showReset={!showWelcome}
+                    onReset={handleReset}
+                />
+            )}
+        </div>
+    );
+};
