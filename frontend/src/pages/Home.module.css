@@ -669,3 +669,102 @@
     color: #fff;
 }
 
+/* Añadir al final de Home.module.css */
+.welcomeContainer {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.welcomeCard {
+    background: var(--card-bg, rgba(255, 255, 255, 0.15));
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-color, #333);
+}
+
+.welcomeCard h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+}
+
+.weatherTips {
+    margin: 25px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+
+.weatherTips ul {
+    padding-left: 20px;
+}
+
+.weatherTips li {
+    margin-bottom: 8px;
+}
+
+.popularCities {
+    margin: 25px 0;
+}
+
+.cityButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.cityButton {
+    padding: 8px 16px;
+    background: rgba(0, 123, 255, 0.2);
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    border-radius: 20px;
+    color: var(--text-color, #333);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cityButton:hover {
+    background: rgba(0, 123, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.featureCard {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.featureCard:hover {
+    transform: translateY(-5px);
+}
+
+.featureCard span {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.featureCard h4 {
+    margin: 10px 0;
+    font-size: 1.2rem;
+}
+
+.featureCard p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color, #666);
+    opacity: 0.8;
+}
