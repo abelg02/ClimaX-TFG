@@ -16,11 +16,15 @@ import { WelcomeScreen } from '../components/WelcomeScreen';
 
 export const Home = () => {
     const { weatherData, loading, error, fetchWeather, resetWeather } = useWeather();
-    const [showWelcome, setShowWelcome] = useState(!weatherData);
+    const [showWelcome, setShowWelcome] = useState(false);
 
-    const handleReset = () => {
-        resetWeather();
-        setShowWelcome(true);
+    const handleSearch = async (city: string) => {
+        try {
+            await fetchWeather(city);
+            setShowWelcome(false);
+        } catch (err) {
+            setShowWelcome(true);
+        }
     };
 
     useEffect(() => {
@@ -40,14 +44,17 @@ export const Home = () => {
             <header className={styles.header}>
                 <div style={{ position: 'absolute', top: '15px', left: '20px', fontSize: '1.8rem' }}>🌤</div>
                 <h1 style={{ margin: '0 0 20px 0', fontSize: '2.2rem', fontWeight: '600' }}>ClimaX</h1>
-                <SearchBar onSearch={fetchWeather} loading={loading} />
+                <SearchBar onSearch={handleSearch} loading={loading} />
             </header>
 
             {error && <ErrorMessage message={error} />}
 
-            {weatherData && !showWelcome ? (
+            {weatherData ? (
                 <main>
-                    <button onClick={handleReset} className={styles.backButton}>
+                    <button onClick={() => {
+                        resetWeather();
+                        setShowWelcome(true);
+                    }} className={styles.backButton}>
                         ← Volver al inicio
                     </button>
 
@@ -78,12 +85,8 @@ export const Home = () => {
                 </main>
             ) : (
                 <WelcomeScreen
-                    onCityClick={(city) => {
-                        fetchWeather(city);
-                        setShowWelcome(false);
-                    }}
-                    showReset={!showWelcome}
-                    onReset={handleReset}
+                    onCityClick={handleSearch}
+                    showReset={false}
                 />
             )}
         </div>

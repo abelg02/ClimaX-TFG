@@ -13,7 +13,10 @@ export const SearchBar = ({ onSearch, loading }: SearchBarProps) => {
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        onSearch(city);
+        if (city.trim()) {
+            onSearch(city);
+            setCity(''); // Limpiamos el input después de buscar
+        }
     };
 
     return (
@@ -28,7 +31,7 @@ export const SearchBar = ({ onSearch, loading }: SearchBarProps) => {
             <div style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: '#666' }}>🔍</div>
             <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !city.trim()}
                 className={styles.searchButton}
             >
                 {loading ? <>⏳ Buscando...</> : <>🔍 Buscar</>}
