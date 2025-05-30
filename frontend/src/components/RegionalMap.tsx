@@ -1,13 +1,12 @@
-// frontend/src/components/RegionalMap.tsx
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherForecast } from '../services/weatherService';
-import { getProvincesForRegion, getRegionCenter } from '../services/regionService';
 import styles from '../pages/Home.module.css';
 
+// Función para obtener el color basado en la temperatura
 const getTempColor = (temp: number) => {
   if (temp < 10) return '#3498db';
   if (temp < 20) return '#2ecc71';
@@ -19,10 +18,10 @@ const getTempColor = (temp: number) => {
 export const RegionalMap = () => {
   const { region } = useParams<{ region: string }>();
   const navigate = useNavigate();
-  const [provinces, setProvinces] = useState<{name: string, lat: number, lng: number}[]>([]);
-  const [weatherData, setWeatherData] = useState<Record<string, any>>({});
+  const location = useLocation();
+  const [weatherData, setWeatherData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([40.0, -3.7]);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([40.0, -3.7]); // Centro de España por defecto
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,36 +30,23 @@ export const RegionalMap = () => {
       setLoading(true);
 
       try {
-        // 1. Obtener provincias y centro del mapa
-        const fetchedProvinces = await getProvincesForRegion(region);
-        setProvinces(fetchedProvinces);
-        setMapCenter(getRegionCenter(region));
+        // Obtener datos de la ciudad desde la ubicación (pasados desde CurrentWeather)
+        const state = location.state;
+        if (state && state.cityData) {
+          const { lat, lon, name } = state.cityData;
+          setMapCenter([lat, lon]);
 
-        // 2. Obtener clima para cada provincia
-        const weatherPromises = fetchedProvinces.map(province =>
-          getWeatherForecast(province.name)
-            .then(data => ({
-              name: province.name,
-              data: {
-                temp: data.current?.temp_c,
-                condition: data.current?.condition?.text,
-                icon: data.current?.condition?.icon,
-                max: data.forecast?.forecastday[0]?.day?.maxtemp_c,
-                min: data.forecast?.forecastday[0]?.day?.mintemp_c
-              }
-            }))
-            .catch(error => {
-              console.error(`Error fetching weather for ${province.name}:`, error);
-              return null;
-            })
-        );
-
-        const results = await Promise.all(weatherPromises);
-        const validResults = results.filter(Boolean) as {name: string, data: any}[];
-
-        setWeatherData(Object.fromEntries(
-          validResults.map(r => [r.name, r.data])
-        ));
+          // Obtener datos del clima para esta ciudad
+          const data = await getWeatherForecast(name);
+          setWeatherData({
+            name,
+            temp: data.current?.temp_c,
+            condition: data.current?.condition?.text,
+            icon: data.current?.condition?.icon,
+            lat,
+            lon
+          });
+        }
       } catch (error) {
         console.error('Error loading map data:', error);
       } finally {
@@ -69,23 +55,27 @@ export const RegionalMap = () => {
     };
 
     fetchData();
-  }, [region]);
+  }, [region, location.state]);
 
   if (loading) {
-    return <div className={styles.loadingMessage}>Cargando datos del mapa...</div>;
+    return <div className={styles.loadingMessage}>Cargando mapa...</div>;
+  }
+
+  if (!weatherData) {
+    return <div className={styles.loadingMessage}>No se encontraron datos para mostrar en el mapa.</div>;
   }
 
   return (
     <div className={styles.mapPageContainer}>
       <h1 className={styles.mapTitle}>
         <span onClick={() => navigate(-1)} style={{ cursor: 'pointer' }}>←</span>
-        Mapa de temperaturas en {region}
+        Mapa de {weatherData.name}
       </h1>
 
       <div className={styles.mapContainer}>
         <MapContainer
           center={mapCenter}
-          zoom={7}
+          zoom={10}
           style={{ height: '500px', width: '100%', borderRadius: '12px' }}
         >
           <TileLayer
@@ -93,52 +83,42 @@ export const RegionalMap = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {provinces.map(provincia => {
-            const weather = weatherData[provincia.name];
-            if (!weather) return null;
-
-            return (
-              <Marker
-                key={provincia.name}
-                position={[provincia.lat, provincia.lng]}
-                icon={L.divIcon({
-                  html: `
-                    <div style="
-                      background: ${getTempColor(weather.temp)};
-                      color: white;
-                      padding: 5px 10px;
-                      border-radius: 50%;
-                      border: 2px solid white;
-                      font-weight: bold;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      width: 40px;
-                      height: 40px;
-                    ">
-                      ${Math.round(weather.temp)}°
-                    </div>
-                  `,
-                  className: ''
-                })}
-              >
-                <Popup>
-                  <div style={{ textAlign: 'center' }}>
-                    <h3>{provincia.name}</h3>
-                    <img
-                      src={`https:${weather.icon}`}
-                      alt={weather.condition}
-                      style={{ width: '50px', height: '50px' }}
-                    />
-                    <p>{weather.condition}</p>
-                    <p><strong>Actual:</strong> {weather.temp}°C</p>
-                    <p><strong>Máx:</strong> {weather.max}°C</p>
-                    <p><strong>Mín:</strong> {weather.min}°C</p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+          <Marker
+            position={[weatherData.lat, weatherData.lon]}
+            icon={L.divIcon({
+              html: `
+                <div style="
+                  background: ${getTempColor(weatherData.temp)};
+                  color: white;
+                  padding: 5px 10px;
+                  border-radius: 50%;
+                  border: 2px solid white;
+                  font-weight: bold;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  width: 40px;
+                  height: 40px;
+                ">
+                  ${Math.round(weatherData.temp)}°
+                </div>
+              `,
+              className: ''
+            })}
+          >
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <h3>{weatherData.name}</h3>
+                <img
+                  src={`https:${weatherData.icon}`}
+                  alt={weatherData.condition}
+                  style={{ width: '50px', height: '50px' }}
+                />
+                <p>{weatherData.condition}</p>
+                <p><strong>Temperatura:</strong> {weatherData.temp}°C</p>
+              </div>
+            </Popup>
+          </Marker>
         </MapContainer>
       </div>
 
