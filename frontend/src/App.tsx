@@ -4,7 +4,6 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Auth } from './components/Auth/Auth';
 import { onAuthStateChange, auth } from './services/firebase';
-import { SettingsMenu } from './components/SettingsMenu';
 import { RegionalMap } from './components/RegionalMap';
 import styles from './pages/Home.module.css';
 import { useWeather } from './context/WeatherContext';
@@ -13,14 +12,14 @@ function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { resetWeather } = useWeather(); // Obtenemos la función resetWeather
+    const { resetWeather } = useWeather();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChange((user) => {
             setIsAuthenticated(!!user);
             setLoading(false);
             if (!user) {
-                resetWeather(); // Resetear el clima cuando no hay usuario
+                resetWeather();
             }
         });
         return unsubscribe;
@@ -28,7 +27,7 @@ function App() {
 
     const handleLogin = () => {
         setIsAuthenticated(true);
-        resetWeather(); // Resetear el clima al iniciar sesión
+        resetWeather();
         navigate('/');
     };
 
@@ -36,7 +35,7 @@ function App() {
         try {
             await auth.signOut();
             setIsAuthenticated(false);
-            resetWeather(); // Resetear el clima al cerrar sesión
+            resetWeather();
             navigate('/');
         } catch (error) {
             console.error("Error al cerrar sesión:", error);
@@ -49,14 +48,19 @@ function App() {
 
     return (
         <div className="App">
+            {isAuthenticated && (
+                <button
+                    onClick={handleLogout}
+                    className={styles.logoutButton}
+                >
+                    Cerrar sesión
+                </button>
+            )}
             {isAuthenticated ? (
-                <>
-                    <SettingsMenu onLogout={handleLogout} />
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/map/:region" element={<RegionalMap />} />
-                    </Routes>
-                </>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/map/:region" element={<RegionalMap />} />
+                </Routes>
             ) : (
                 <Auth onLogin={handleLogin} />
             )}
