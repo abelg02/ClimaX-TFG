@@ -41,16 +41,12 @@ export const Home = () => {
 
     return (
         <div className={styles.container}>
-            <header className={styles.header}>
-                <div style={{ position: 'absolute', top: '15px', left: '20px', fontSize: '1.8rem' }}>🌤</div>
-                <h1 style={{ margin: '0 0 20px 0', fontSize: '2.2rem', fontWeight: '600' }}>ClimaX</h1>
-                <SearchBar onSearch={handleSearch} loading={loading} />
-            </header>
+                    <SearchBar onSearch={handleSearch} loading={loading} />
 
-            {error && <ErrorMessage message={error} />}
+                    {error && <ErrorMessage message={error} />}
 
-            {weatherData ? (
-                <main>
+                    {weatherData ? (
+                        <main>
                     <button onClick={() => {
                         resetWeather();
                         setShowWelcome(true);

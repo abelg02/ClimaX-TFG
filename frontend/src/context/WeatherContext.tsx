@@ -9,7 +9,7 @@ type WeatherContextType = {
     loading: boolean;
     error: string | null;
     fetchWeather: (city: string) => Promise<void>;
-    resetWeather: () => void; // Nueva función
+    resetWeather: () => void;
 };
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
