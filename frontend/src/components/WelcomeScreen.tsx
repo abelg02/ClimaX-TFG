@@ -1,3 +1,4 @@
+// frontend/src/components/WelcomeScreen.tsx
 import styles from '../pages/Home.module.css';
 
 type WelcomeScreenProps = {
@@ -10,14 +11,14 @@ export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: Welco
     const popularCities = ['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Bilbao', 'Málaga'];
 
     return (
-        <div className={styles.welcomeContainer}>
+        <div className={styles.welcomeContainerFull}>
             {showReset && (
                 <button onClick={onReset} className={styles.backButton}>
                     ← Volver al inicio
                 </button>
             )}
 
-            <div className={styles.welcomeCard}>
+            <div className={styles.welcomeContent}>
                 <h2>👋 ¡Bienvenido a Climax!</h2>
                 <p>Busca una ciudad para ver el pronóstico meteorológico completo.</p>
 
