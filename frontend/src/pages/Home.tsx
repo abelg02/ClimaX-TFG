@@ -47,13 +47,6 @@ export const Home = () => {
 
                     {weatherData ? (
                         <main>
-                    <button onClick={() => {
-                        resetWeather();
-                        setShowWelcome(true);
-                    }} className={styles.backButton}>
-                        ← Volver al inicio
-                    </button>
-
                     <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
                         <div>
                             <CurrentWeather data={weatherData} />

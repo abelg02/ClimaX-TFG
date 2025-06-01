@@ -1019,7 +1019,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin: -20px 0 0 -20px; /* Compensamos el padding del container */
-    position: relative; /* Aseguramos que cubra todo */
+    position: absolute; /* Aseguramos que cubra todo */
     left: 0;
     right: 0;
 }

@@ -25,8 +25,8 @@ export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: Welco
             )}
 
             <div className={styles.welcomeHero}>
-                <h1>Bienvenido a <span className={styles.appName}>Climax</span></h1>
-                <p className={styles.subtitle}>Tu aplicación meteorológica favorita</p>
+                <h1>Bienvenido a <span className={styles.appName}>ClimaX</span></h1>
+                <p className={styles.subtitle}>Información meteorológica precisa</p>
             </div>
 
             <div className={styles.weatherIllustration}>
