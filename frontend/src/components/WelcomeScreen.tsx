@@ -8,66 +8,83 @@ type WelcomeScreenProps = {
 };
 
 export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: WelcomeScreenProps) => {
-    const popularCities = ['Madrid', 'Barcelona', 'Valencia', 'Sevilla', 'Bilbao', 'Málaga'];
+    const popularCities = [
+        { name: 'Madrid', country: 'Spain' },
+        { name: 'Barcelona', country: 'Spain' },
+        { name: 'Valencia', country: 'Spain' },
+        { name: 'Sevilla', country: 'Spain' },
+        { name: 'Bilbao', country: 'Spain' },
+    ];
 
     return (
-        <div className={styles.welcomeContainerFull}>
+        <div className={styles.welcomeScreen}>
             {showReset && (
                 <button onClick={onReset} className={styles.backButton}>
                     ← Volver al inicio
                 </button>
             )}
 
-            <div className={styles.welcomeContent}>
-                <h2>👋 ¡Bienvenido a Climax!</h2>
-                <p>Busca una ciudad para ver el pronóstico meteorológico completo.</p>
+            <div className={styles.welcomeHero}>
+                <h1>Bienvenido a <span className={styles.appName}>Climax</span></h1>
+                <p className={styles.subtitle}>Tu aplicación meteorológica favorita</p>
+            </div>
 
-                <div className={styles.weatherTips}>
-                    <h3>💡 Consejos útiles:</h3>
-                    <ul>
-                        <li>Haz clic en cualquier región del mapa para ver detalles</li>
-                        <li>Configura alertas personalizadas para condiciones específicas</li>
-                        <li>Expande cada día para ver detalles completos del pronóstico</li>
-                    </ul>
+            <div className={styles.weatherIllustration}>
+                <div className={styles.sun}></div>
+                <div className={styles.cloud}></div>
+                <div className={styles.cloud}></div>
+            </div>
+
+            <div className={styles.popularCitiesSection}>
+                <h2>Ciudades populares en España</h2>
+                <div className={styles.cityGrid}>
+                    {popularCities.map(city => (
+                        <button
+                            key={city.name}
+                            onClick={() => onCityClick(`${city.name}, ${city.country}`)}
+                            className={styles.cityCard}
+                        >
+                            <span className={styles.cityName}>{city.name}</span>
+                            <span className={styles.cityCountry}>{city.country}</span>
+                        </button>
+                    ))}
                 </div>
+            </div>
 
-                <div className={styles.popularCities}>
-                    <h3>🌆 Ciudades populares:</h3>
-                    <div className={styles.cityButtons}>
-                        {popularCities.map(city => (
-                            <button
-                                key={city}
-                                onClick={() => onCityClick(city)}
-                                className={styles.cityButton}
-                            >
-                                {city}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
+            <div className={styles.featuresSection}>
+                <h2>Características principales</h2>
                 <div className={styles.featuresGrid}>
                     <div className={styles.featureCard}>
-                        <span>🌡️</span>
-                        <h4>Temperatura</h4>
-                        <p>Pronóstico por horas y días</p>
+                        <div className={styles.featureIcon}>🌡️</div>
+                        <h3>Temperatura</h3>
+                        <p>Pronóstico preciso por horas y días</p>
                     </div>
                     <div className={styles.featureCard}>
-                        <span>💨</span>
-                        <h4>Viento</h4>
-                        <p>Velocidad y dirección</p>
+                        <div className={styles.featureIcon}>💨</div>
+                        <h3>Viento</h3>
+                        <p>Velocidad y dirección del viento</p>
                     </div>
                     <div className={styles.featureCard}>
-                        <span>🌫️</span>
-                        <h4>Calidad del aire</h4>
-                        <p>Índice AQI detallado</p>
+                        <div className={styles.featureIcon}>🌧️</div>
+                        <h3>Precipitaciones</h3>
+                        <p>Probabilidad de lluvia y nieve</p>
                     </div>
                     <div className={styles.featureCard}>
-                        <span>⚠️</span>
-                        <h4>Alertas</h4>
-                        <p>Configura tus propias alertas</p>
+                        <div className={styles.featureIcon}>⚠️</div>
+                        <h3>Alertas</h3>
+                        <p>Notificaciones meteorológicas</p>
                     </div>
                 </div>
+            </div>
+
+            <div className={styles.tipsSection}>
+                <h2>Consejos útiles</h2>
+                <ul className={styles.tipsList}>
+                    <li>🔍 Busca cualquier ciudad del mundo</li>
+                    <li>📅 Planifica tu semana con el pronóstico extendido</li>
+                    <li>🔔 Configura alertas personalizadas</li>
+                    <li>🗺️ Explora el mapa meteorológico</li>
+                </ul>
             </div>
         </div>
     );
