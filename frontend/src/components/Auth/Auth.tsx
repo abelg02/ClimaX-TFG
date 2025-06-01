@@ -19,7 +19,7 @@ export const Auth = ({ onLogin }: { onLogin: () => void }) => {
                 await loginUser(email, password);
             } else {
                 await registerUser(email, password);
-                await saveUserData(user.uid, name);
+                // await saveUserData(user.uid, name); // Descomentar cuando tengas el user
             }
             onLogin();
         } catch (err: any) {
@@ -29,67 +29,92 @@ export const Auth = ({ onLogin }: { onLogin: () => void }) => {
 
     const getFirebaseError = (code: string) => {
         switch(code) {
-            case 'auth/invalid-email':
-                return 'Email no válido';
-            case 'auth/user-disabled':
-                return 'Usuario deshabilitado';
-            case 'auth/user-not-found':
-                return 'Usuario no encontrado';
-            case 'auth/wrong-password':
-                return 'Contraseña incorrecta';
-            case 'auth/email-already-in-use':
-                return 'El email ya está registrado';
-            case 'auth/weak-password':
-                return 'La contraseña es demasiado débil';
-            default:
-                return 'Error al autenticar';
+            case 'auth/invalid-email': return 'Email no válido';
+            case 'auth/user-disabled': return 'Usuario deshabilitado';
+            case 'auth/user-not-found': return 'Usuario no encontrado';
+            case 'auth/wrong-password': return 'Contraseña incorrecta';
+            case 'auth/email-already-in-use': return 'El email ya está registrado';
+            case 'auth/weak-password': return 'La contraseña es demasiado débil';
+            default: return 'Error al autenticar';
         }
     };
 
     return (
         <div className={styles.authContainer}>
-            <h2>{isLogin ? 'Iniciar sesión' : 'Registrarse'}</h2>
+            <div className={styles.authHeader}>
+                <div className={styles.authLogo}>
+                    <span>🌤️</span>
+                    <h1>ClimaX</h1>
+                </div>
+                <h2>{isLogin ? 'Inicia sesión' : 'Regístrate'}</h2>
+                <p>{isLogin ? 'Accede a tu cuenta para ver el clima' : 'Crea una cuenta para comenzar'}</p>
+            </div>
 
-            {error && <div className={styles.errorMessage}>{error}</div>}
+            {error && <div className={styles.authError}>{error}</div>}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={styles.authForm}>
                 {!isLogin && (
                     <div className={styles.formGroup}>
-                        <label>Nombre:</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
+                        <label>Nombre completo</label>
+                        <div className={styles.inputWrapper}>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Ej: Juan Pérez"
+                            />
+                            <span className={styles.inputIcon}>👤</span>
+                        </div>
                     </div>
                 )}
 
                 <div className={styles.formGroup}>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                    />
+                    <label>Correo electrónico</label>
+                    <div className={styles.inputWrapper}>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Ej: usuario@ejemplo.com"
+                        />
+                        <span className={styles.inputIcon}>✉️</span>
+                    </div>
                 </div>
 
                 <div className={styles.formGroup}>
-                    <label>Contraseña:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <label>Contraseña</label>
+                    <div className={styles.inputWrapper}>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder={isLogin ? 'Introduce tu contraseña' : 'Mínimo 6 caracteres'}
+                        />
+                        <span className={styles.inputIcon}>🔒</span>
+                    </div>
                 </div>
 
                 <button type="submit" className={styles.authButton}>
                     {isLogin ? 'Iniciar sesión' : 'Registrarse'}
                 </button>
+
+                <div className={styles.authDivider}>
+                    <span>o</span>
+                </div>
+
             </form>
 
-            <p className={styles.authToggle} onClick={() => setIsLogin(!isLogin)}>
-                {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
-            </p>
+            <div className={styles.authFooter}>
+                <p>
+                    {isLogin ? '¿No tienes cuenta?' : '¿Ya tienes cuenta?'}
+                    <button
+                        onClick={() => setIsLogin(!isLogin)}
+                        className={styles.authToggle}
+                    >
+                        {isLogin ? ' Regístrate' : ' Inicia sesión'}
+                    </button>
+                </p>
+            </div>
         </div>
     );
 };
