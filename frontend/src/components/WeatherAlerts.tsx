@@ -156,7 +156,7 @@ export const WeatherAlerts = ({ weatherData }: { weatherData: any }) => {
 
   return (
     <div className={styles.alertsContainer}>
-      <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-color)' }}>
         <span>⚠️</span> Alertas Meteorológicas
       </h3>
 

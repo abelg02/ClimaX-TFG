@@ -48,7 +48,7 @@ export const WeeklyForecast = ({ days }: WeeklyForecastProps) => {
             <h3 style={{ margin: '0 0 15px 0', fontSize: '1.2rem', fontWeight: '600', color: '#444', display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span>📆</span> Pronóstico para los próximos 7 días
             </h3>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', overflow: 'hidden' }}>
+            <div style={{ backgroundColor: 'var(--card-bg)', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.2)',border: '1px solid rgba(255, 255, 255, 0.2)' }}>
                 {days.map((day, index) => (
                     <div key={day.date}>
                         <div
@@ -90,8 +90,8 @@ export const WeeklyForecast = ({ days }: WeeklyForecastProps) => {
                         {expandedDay === day.date && (
                             <div className={styles.dayDetails} style={{
                                 padding: '15px',
-                                backgroundColor: '#f9f9f9',
-                                borderTop: '1px solid #eee',
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
                                 animation: 'fadeIn 0.3s ease'
                             }}>
                                 <div style={{
