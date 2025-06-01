@@ -1,4 +1,3 @@
-// frontend/src/components/TemperatureChart.tsx
 import {
     LineChart,
     Line,
@@ -18,6 +17,13 @@ type TemperatureChartProps = {
 };
 
 export const TemperatureChart = ({ hourlyData }: TemperatureChartProps) => {
+    // Calcular estadísticas
+    const maxTemp = Math.max(...hourlyData.map(item => item.temp));
+    const minTemp = Math.min(...hourlyData.map(item => item.temp));
+    const avgTemp = (hourlyData.reduce((sum, item) => sum + item.temp, 0) / hourlyData.length);
+    const maxTempTime = hourlyData.find(item => item.temp === maxTemp)?.time;
+    const minTempTime = hourlyData.find(item => item.temp === minTemp)?.time;
+
     return (
         <div className={styles.chartContainer}>
             <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '1.5rem' }}>📈</div>
@@ -52,6 +58,40 @@ export const TemperatureChart = ({ hourlyData }: TemperatureChartProps) => {
                         />
                     </LineChart>
                 </ResponsiveContainer>
+            </div>
+
+            {/* Sección de estadísticas */}
+            <div className={styles.chartStats}>
+                <div className={styles.statItem}>
+                    <span className={styles.statLabel}>Máxima:</span>
+                    <span className={styles.statValue}>{maxTemp.toFixed(1)}°C</span>
+                    <span className={styles.statTime}>{maxTempTime}</span>
+                </div>
+                <div className={styles.statItem}>
+                    <span className={styles.statLabel}>Media:</span>
+                    <span className={styles.statValue}>{avgTemp.toFixed(1)}°C</span>
+                </div>
+                <div className={styles.statItem}>
+                    <span className={styles.statLabel}>Mínima:</span>
+                    <span className={styles.statValue}>{minTemp.toFixed(1)}°C</span>
+                    <span className={styles.statTime}>{minTempTime}</span>
+                </div>
+            </div>
+
+            {/* Leyenda de temperatura modificada */}
+            <div className={styles.tempLegend}>
+                <div className={styles.legendItem}>
+                    <div className={styles.legendColor} style={{ backgroundColor: '#ff6b6b' }}></div>
+                    <span>Máxima del día</span>
+                </div>
+                <div className={styles.legendItem}>
+                    <div className={styles.legendColor} style={{ backgroundColor: '#007bff' }}></div>
+                    <span>Temperatura media</span>
+                </div>
+                <div className={styles.legendItem}>
+                    <div className={styles.legendColor} style={{ backgroundColor: '#6bc5ff' }}></div>
+                    <span>Mínima del día</span>
+                </div>
             </div>
         </div>
     );
