@@ -14,7 +14,6 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
     min-height: 100vh;
-    background: var(--bg-gradient);
     overflow-x: hidden;
     transition: background 0.5s ease, color 0.5s ease;
 }

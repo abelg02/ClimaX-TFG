@@ -34,20 +34,30 @@ export const Home = () => {
             const weatherStyles = getWeatherStyles(weatherCode, isDay);
 
             document.documentElement.style.setProperty('--bg-gradient', weatherStyles.background);
-            document.documentElement.style.setProperty('--text-color', weatherStyles.textColor);
+            // Forzamos el color de texto a negro o gris oscuro
+            document.documentElement.style.setProperty('--text-color', '#333333');
             document.documentElement.style.setProperty('--card-bg', weatherStyles.cardBg);
+        } else {
+            // Establecer color de texto por defecto cuando no hay datos meteorológicos
+            document.documentElement.style.setProperty('--text-color', '#333333');
         }
     }, [weatherData]);
 
     return (
-        <div className={styles.container}>
-                    <SearchBar onSearch={handleSearch} loading={loading} />
+        <div className={styles.container} style={{ color: '#333333' }}>
+            <SearchBar onSearch={handleSearch} loading={loading} />
 
-                    {error && <ErrorMessage message={error} />}
+            {error && <ErrorMessage message={error} />}
 
-                    {weatherData ? (
-                        <main>
-                    <section style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '30px' }}>
+            {weatherData ? (
+                <main style={{ color: '#333333' }}>
+                    <section style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '20px',
+                        marginBottom: '30px',
+                        color: '#333333'
+                    }}>
                         <div>
                             <CurrentWeather data={weatherData} />
 
