@@ -7,6 +7,7 @@ import { onAuthStateChange, auth } from './services/firebase';
 import { RegionalMap } from './components/RegionalMap';
 import styles from './pages/Home.module.css';
 import { useWeather } from './context/WeatherContext';
+import { SearchBar } from './components/SearchBar'; // ✅ Asegúrate de que esté bien importado
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -48,6 +49,7 @@ function App() {
 
     return (
         <div className="App">
+            <SearchBar onSearch={() => {}} loading={false} /> {/* ✅ Añadido aquí */}
             {isAuthenticated && (
                 <button
                     onClick={handleLogout}

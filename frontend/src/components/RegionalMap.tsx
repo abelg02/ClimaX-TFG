@@ -1,11 +1,20 @@
 // frontend/src/components/RegionalMap.tsx
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherForecast } from '../services/weatherService';
 import styles from '../pages/Home.module.css';
+
+// Componente para controlar el zoom
+const ZoomController = ({ zoomLevel }: { zoomLevel: number }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setZoom(zoomLevel);
+  }, [zoomLevel, map]);
+  return null;
+};
 
 // Configuración de iconos personalizados
 const createCustomIcon = (temp: number) => {
@@ -41,25 +50,14 @@ const getTempColor = (temp: number) => {
 };
 
 const getWeatherIcon = (condition: string) => {
-  const icons: Record<string, string> = {
-    'sunny': '☀️',
-    'clear': '🌙',
-    'cloudy': '☁️',
-    'partly-cloudy': '⛅',
-    'rain': '🌧️',
-    'snow': '❄️',
-    'thunder': '⛈️',
-    'fog': '🌫️'
-  };
-
-  const lowerCondition = condition.toLowerCase();
-  if (lowerCondition.includes('sun') || lowerCondition.includes('clear')) return icons.sunny;
-  if (lowerCondition.includes('cloud')) return icons.cloudy;
-  if (lowerCondition.includes('rain')) return icons.rain;
-  if (lowerCondition.includes('snow')) return icons.snow;
-  if (lowerCondition.includes('thunder') || lowerCondition.includes('storm')) return icons.thunder;
-  if (lowerCondition.includes('fog') || lowerCondition.includes('mist')) return icons.fog;
-  return icons.sunny;
+  const conditionLower = condition.toLowerCase();
+  if (conditionLower.includes('sun') || conditionLower.includes('clear')) return '☀️';
+  if (conditionLower.includes('cloud')) return '☁️';
+  if (conditionLower.includes('rain')) return '🌧️';
+  if (conditionLower.includes('snow')) return '❄️';
+  if (conditionLower.includes('thunder') || conditionLower.includes('storm')) return '⛈️';
+  if (conditionLower.includes('fog') || conditionLower.includes('mist')) return '🌫️';
+  return '🌤️';
 };
 
 export const RegionalMap = () => {
@@ -69,8 +67,8 @@ export const RegionalMap = () => {
   const [weatherData, setWeatherData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState<[number, number]>([40.0, -3.7]);
-  const [zoomLevel, setZoomLevel] = useState(8);
-  const [cities, setCities] = useState<Array<{name: string, lat: number, lon: number}>>([]);
+  const [zoomLevel, setZoomLevel] = useState(10);
+  const [cities, setCities] = useState<Array<{name: string, lat: number, lon: number, temp?: number, condition?: string}>>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
   useEffect(() => {
@@ -81,32 +79,56 @@ export const RegionalMap = () => {
 
       try {
         const state = location.state;
-        if (state && state.cityData) {
+        if (state?.cityData) {
           const { lat, lon, name } = state.cityData;
           setMapCenter([lat, lon]);
           setSelectedCity(name);
 
-          const data = await getWeatherForecast(name);
-          setWeatherData({
+          // Obtener datos de la ciudad principal
+          const mainCityData = await getWeatherForecast(name);
+          const mainCity = {
             name,
-            temp: data.current?.temp_c,
-            condition: data.current?.condition?.text,
-            icon: data.current?.condition?.icon,
             lat,
             lon,
-            humidity: data.current?.humidity,
-            wind: data.current?.wind_kph,
-            feelslike: data.current?.feelslike_c
-          });
+            temp: mainCityData.current?.temp_c,
+            condition: mainCityData.current?.condition?.text,
+            humidity: mainCityData.current?.humidity,
+            wind: mainCityData.current?.wind_kph,
+            feelslike: mainCityData.current?.feelslike_c
+          };
 
-          // Simulamos obtener ciudades cercanas (en un proyecto real usarías una API)
-          const mockCities = [
+          setWeatherData(mainCity);
+
+          // Obtener datos de ciudades cercanas (simuladas)
+          const nearbyCities = [
             { name: `${name} Norte`, lat: lat + 0.2, lon: lon + 0.1 },
             { name: `${name} Sur`, lat: lat - 0.2, lon: lon - 0.1 },
             { name: `${name} Este`, lat: lat + 0.1, lon: lon + 0.2 },
             { name: `${name} Oeste`, lat: lat - 0.1, lon: lon - 0.2 }
           ];
-          setCities(mockCities);
+
+          // Obtener datos reales para cada ciudad cercana
+          const citiesWithWeather = await Promise.all(
+            nearbyCities.map(async (city) => {
+              try {
+                const data = await getWeatherForecast(city.name);
+                return {
+                  ...city,
+                  temp: data.current?.temp_c,
+                  condition: data.current?.condition?.text
+                };
+              } catch (error) {
+                // Si falla, usar datos similares a la ciudad principal con pequeña variación
+                return {
+                  ...city,
+                  temp: mainCity.temp ? mainCity.temp + (Math.random() * 2 - 1) : undefined,
+                  condition: mainCity.condition
+                };
+              }
+            })
+          );
+
+          setCities([mainCity, ...citiesWithWeather]);
         }
       } catch (error) {
         console.error('Error loading map data:', error);
@@ -117,6 +139,14 @@ export const RegionalMap = () => {
 
     fetchData();
   }, [region, location.state]);
+
+  const handleCityClick = (cityName: string) => {
+    const city = cities.find(c => c.name === cityName);
+    if (city) {
+      setSelectedCity(cityName);
+      setMapCenter([city.lat, city.lon]);
+    }
+  };
 
   if (loading) {
     return (
@@ -153,20 +183,7 @@ export const RegionalMap = () => {
         <h1 className={styles.mapTitle}>
           Mapa Meteorológico: {weatherData.name}
         </h1>
-        <div className={styles.mapControls}>
-          <button
-            onClick={() => setZoomLevel(z => Math.min(z + 1, 12))}
-            className={styles.zoomButton}
-          >
-            +
-          </button>
-          <button
-            onClick={() => setZoomLevel(z => Math.max(z - 1, 6))}
-            className={styles.zoomButton}
-          >
-            -
-          </button>
-        </div>
+
       </div>
 
       <div className={styles.mapLayout}>
@@ -176,114 +193,109 @@ export const RegionalMap = () => {
             zoom={zoomLevel}
             style={{ height: '100%', width: '100%', borderRadius: '12px' }}
           >
+            <ZoomController zoomLevel={zoomLevel} />
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
 
-            {/* Marker principal */}
-            <Marker
-              position={[weatherData.lat, weatherData.lon]}
-              icon={createCustomIcon(weatherData.temp)}
-            >
-              <Popup className={styles.customPopup}>
-                <div className={styles.popupContent}>
-                  <h3>{weatherData.name}</h3>
-                  <div className={styles.popupWeather}>
-                    <span className={styles.weatherIcon}>
-                      {getWeatherIcon(weatherData.condition)}
-                    </span>
-                    <span className={styles.weatherTemp}>
-                      {Math.round(weatherData.temp)}°C
-                    </span>
-                  </div>
-                  <p className={styles.weatherCondition}>
-                    {weatherData.condition}
-                  </p>
-                  <div className={styles.weatherDetails}>
-                    <div>
-                      <span>🌡️ Sensación: {Math.round(weatherData.feelslike)}°C</span>
-                    </div>
-                    <div>
-                      <span>💧 Humedad: {weatherData.humidity}%</span>
-                    </div>
-                    <div>
-                      <span>🌬️ Viento: {weatherData.wind} km/h</span>
-                    </div>
-                  </div>
-                </div>
-              </Popup>
-            </Marker>
-
-            {/* Ciudades cercanas */}
             {cities.map((city, index) => (
               <Marker
                 key={index}
                 position={[city.lat, city.lon]}
-                icon={createCustomIcon(weatherData.temp + (Math.random() * 4 - 2))}
+                icon={createCustomIcon(city.temp || 0)}
+                eventHandlers={{
+                  click: () => handleCityClick(city.name)
+                }}
               >
-                <Popup>
+                <Popup className={styles.customPopup}>
                   <div className={styles.popupContent}>
-                    <h4>{city.name}</h4>
-                    <p>Temperatura aproximada: {Math.round(weatherData.temp + (Math.random() * 4 - 2))}°C</p>
+                    <h3>{city.name}</h3>
+                    <div className={styles.popupWeather}>
+                      <span className={styles.weatherIcon}>
+                        {getWeatherIcon(city.condition || '')}
+                      </span>
+                      <span className={styles.weatherTemp}>
+                        {city.temp ? Math.round(city.temp) : '--'}°C
+                      </span>
+                    </div>
+                    <p className={styles.weatherCondition}>
+                      {city.condition || 'Datos no disponibles'}
+                    </p>
                   </div>
                 </Popup>
               </Marker>
             ))}
 
-            {/* Radio de influencia (simulado) */}
-            <Circle
-              center={[weatherData.lat, weatherData.lon]}
-              radius={10000}
-              fillOpacity={0.1}
-              fillColor={getTempColor(weatherData.temp)}
-              color={getTempColor(weatherData.temp)}
-            />
+            {selectedCity && (
+              <Circle
+                center={[
+                  cities.find(c => c.name === selectedCity)?.lat || 0,
+                  cities.find(c => c.name === selectedCity)?.lon || 0
+                ]}
+                radius={5000 * (12 / zoomLevel)}
+                fillOpacity={0.2}
+                fillColor={getTempColor(
+                  cities.find(c => c.name === selectedCity)?.temp || 0
+                )}
+                color={getTempColor(
+                  cities.find(c => c.name === selectedCity)?.temp || 0
+                )}
+              />
+            )}
           </MapContainer>
         </div>
 
         <div className={styles.mapSidebar}>
           <div className={styles.weatherSummary}>
             <h3>Resumen Meteorológico</h3>
-            <div className={styles.summaryContent}>
-              <div className={styles.summaryIcon}>
-                {getWeatherIcon(weatherData.condition)}
-              </div>
-              <div className={styles.summaryTemp}>
-                {Math.round(weatherData.temp)}°C
-              </div>
-              <div className={styles.summaryText}>
-                {weatherData.condition}
-              </div>
-            </div>
-            <div className={styles.summaryDetails}>
-              <div className={styles.detailItem}>
-                <span>🌡️ Sensación</span>
-                <span>{Math.round(weatherData.feelslike)}°C</span>
-              </div>
-              <div className={styles.detailItem}>
-                <span>💧 Humedad</span>
-                <span>{weatherData.humidity}%</span>
-              </div>
-              <div className={styles.detailItem}>
-                <span>🌬️ Viento</span>
-                <span>{weatherData.wind} km/h</span>
-              </div>
-            </div>
+            {selectedCity && (
+              <>
+                <div className={styles.summaryContent}>
+                  <div className={styles.summaryIcon}>
+                    {getWeatherIcon(
+                      cities.find(c => c.name === selectedCity)?.condition || ''
+                    )}
+                  </div>
+                  <div className={styles.summaryTemp}>
+                    {cities.find(c => c.name === selectedCity)?.temp
+                      ? Math.round(cities.find(c => c.name === selectedCity)?.temp || 0)
+                      : '--'}°C
+                  </div>
+                  <div className={styles.summaryText}>
+                    {cities.find(c => c.name === selectedCity)?.condition || 'Datos no disponibles'}
+                  </div>
+                </div>
+                <div className={styles.summaryDetails}>
+                  <div className={styles.detailItem}>
+                    <span>🌡️ Sensación</span>
+                    <span>{weatherData.feelslike ? Math.round(weatherData.feelslike) : '--'}°C</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <span>💧 Humedad</span>
+                    <span>{weatherData.humidity || '--'}%</span>
+                  </div>
+                  <div className={styles.detailItem}>
+                    <span>🌬️ Viento</span>
+                    <span>{weatherData.wind || '--'} km/h</span>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           <div className={styles.nearbyCities}>
-            <h3>Ciudades Cercanas</h3>
+            <h3>Áreas Cercanas</h3>
             <div className={styles.cityList}>
               {cities.map((city, index) => (
                 <div
                   key={index}
                   className={`${styles.cityItem} ${selectedCity === city.name ? styles.selectedCity : ''}`}
-                  onClick={() => setSelectedCity(city.name)}
+                  onClick={() => handleCityClick(city.name)}
                 >
                   <span className={styles.cityName}>{city.name}</span>
                   <span className={styles.cityTemp}>
-                    {Math.round(weatherData.temp + (Math.random() * 4 - 2))}°C
+                    {city.temp ? Math.round(city.temp) : '--'}°C
                   </span>
                 </div>
               ))}
@@ -294,18 +306,16 @@ export const RegionalMap = () => {
 
       <div className={styles.mapLegend}>
         <h3>Leyenda de Temperaturas</h3>
-        <div className={styles.legendItems}>
-          {[0, 10, 20, 30, 40].map((temp, i, arr) => (
-            <div key={temp} className={styles.legendItem}>
-              <div
-                className={styles.legendColor}
-                style={{ backgroundColor: getTempColor(temp) }}
-              ></div>
-              <span className={styles.legendLabel}>
-                {i === arr.length - 1 ? `>${temp}°C` : `${temp}-${arr[i+1]}°C`}
-              </span>
-            </div>
-          ))}
+        <div className={styles.legendScale}>
+          <div className={styles.legendGradient}></div>
+          <div className={styles.legendLabels}>
+            <span>-10°C</span>
+            <span>0°C</span>
+            <span>10°C</span>
+            <span>20°C</span>
+            <span>30°C</span>
+            <span>40°C</span>
+          </div>
         </div>
       </div>
     </div>
