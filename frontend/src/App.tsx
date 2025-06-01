@@ -49,14 +49,13 @@ function App() {
 
     return (
         <div className="App">
-            <SearchBar onSearch={() => {}} loading={false} /> {/* ✅ Añadido aquí */}
             {isAuthenticated && (
-                <button
-                    onClick={handleLogout}
-                    className={styles.logoutButton}
-                >
-                    Cerrar sesión
-                </button>
+                <>
+                    <SearchBar onSearch={() => {}} loading={false} /> {/* ✅ Ahora solo aparece cuando está autenticado */}
+                    <button onClick={handleLogout} className={styles.logoutButton}>
+                        Cerrar sesión
+                    </button>
+                </>
             )}
             {isAuthenticated ? (
                 <Routes>
