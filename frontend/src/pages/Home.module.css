@@ -1310,3 +1310,292 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
+/* Agrega esto a tu Home.module.css */
+
+/* Estilos para el mapa */
+.mapPageContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.mapTitle {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.mapControls {
+  display: flex;
+  gap: 10px;
+}
+
+.zoomButton {
+  background: #5a4fcf;
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.zoomButton:hover {
+  background: #3a30a8;
+  transform: scale(1.1);
+}
+
+.mapLayout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  height: 600px;
+}
+
+.mapContainerWrapper {
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.mapSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.weatherSummary {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.summaryContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.summaryIcon {
+  font-size: 2.5rem;
+}
+
+.summaryTemp {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.summaryText {
+  font-size: 1rem;
+  color: #666;
+}
+
+.summaryDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.nearbyCities {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  flex-grow: 1;
+}
+
+.cityList {
+  margin-top: 15px;
+}
+
+.cityItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cityItem:hover {
+  background: #f5f5ff;
+}
+
+.selectedCity {
+  background: #f0f0ff;
+  font-weight: 500;
+}
+
+.cityName {
+  color: #333;
+}
+
+.cityTemp {
+  font-weight: bold;
+  color: #5a4fcf;
+}
+
+.mapLegend {
+  margin-top: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.legendItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.legendLabel {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.customPopup {
+  border-radius: 12px;
+  padding: 0;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.popupContent {
+  padding: 15px;
+}
+
+.popupWeather {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.weatherIcon {
+  font-size: 2rem;
+}
+
+.weatherTemp {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.weatherCondition {
+  margin: 5px 0;
+  color: #666;
+}
+
+.weatherDetails {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+
+.mapLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 20px;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5a4fcf;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mapErrorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 20px;
+  text-align: center;
+}
+
+.backButton {
+  background: #5a4fcf;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.backButton:hover {
+  background: #3a30a8;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .mapLayout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .mapSidebar {
+    margin-top: 20px;
+  }
+}
