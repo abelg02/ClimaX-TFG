@@ -816,6 +816,7 @@
     border-radius: 12px;
     text-align: center;
     transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
 .featureCard:hover {
@@ -1674,3 +1675,259 @@ body {
     height: 12px;
     border-radius: 3px;
 }
+
+/* Añade esto al final de Home.module.css */
+
+/* Estilos para el modal de características */
+.featureModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modalOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modalContainer {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    z-index: 2001;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.closeModal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.modalContent {
+    padding: 10px;
+}
+
+.modalContent h3 {
+    margin-top: 0;
+    font-size: 1.5rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Estilos para ejemplos específicos */
+.exampleChart {
+    display: flex;
+    margin: 20px 0;
+    height: 200px;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 30px;
+}
+
+.chartBar {
+    width: 50px;
+    border-radius: 8px 8px 0 0;
+    position: relative;
+}
+
+.chartLabels {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10px;
+}
+
+.windExample {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.windCompass {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.compass {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.compass span {
+    position: absolute;
+    font-size: 0.8rem;
+}
+
+.compass span:nth-child(2) { top: 5px; left: 50%; transform: translateX(-50%); } /* N */
+.compass span:nth-child(3) { right: 5px; top: 50%; transform: translateY(-50%); } /* E */
+.compass span:nth-child(4) { bottom: 5px; left: 50%; transform: translateX(-50%); } /* S */
+.compass span:nth-child(5) { left: 5px; top: 50%; transform: translateY(-50%); } /* W */
+
+.direction {
+    font-size: 2rem;
+}
+
+.windSpeed {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.rainExample {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.rainHour {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rainBarContainer {
+    height: 100px;
+    width: 30px;
+    margin: 10px 0;
+    display: flex;
+    align-items: flex-end;
+}
+
+.rainBar {
+    width: 100%;
+    background: linear-gradient(to bottom, #007bff, #00b4ff);
+    border-radius: 4px 4px 0 0;
+}
+
+.rainLegend {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+.alertsExample {
+    margin: 20px 0;
+}
+
+.alertExampleItem {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.alertStatus {
+    font-weight: bold;
+    color: #28a745;
+}
+
+.alertStatus.inactive {
+    color: #6c757d;
+}
+
+/* Estilos para el quiz */
+.quizSection {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.quizSection p {
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.quizSection input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.quizSection button {
+    background: #5a4fcf;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quizSection button:hover {
+    background: #3a30a8;
+}
+
+.quizResult {
+    margin-top: 10px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.quizResult.correct {
+    background: #d4edda;
+    color: #155724;
+}
+
+.quizResult.incorrect {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Agregar al final de Home.module.css */
+.demoLabel {
+    display: block;
+    background: #5a4fcf;
+    color: white;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin: 0 auto 12px auto;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    max-width: fit-content;
+}
+
