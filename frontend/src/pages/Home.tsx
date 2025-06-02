@@ -11,7 +11,7 @@ import { AirQuality } from '../components/AirQuality';
 import { UVIndex } from '../components/UVIndex';
 import { WeatherAlerts } from '../components/WeatherAlerts';
 import { getWeatherStyles } from '../utils/weatherStyles';
-import { WelcomeScreen } from '../components/WelcomeScreen';
+import { WelcomeScreen } from '../components/WelcomeScreen/WelcomeScreen';
 import { Menu } from '../components/Menu/Menu';
 
 export const Home = () => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import styles from '../pages/Home.module.css';
-import { ErrorMessage } from './ErrorMessage';
+import styles from './WelcomeScreen.module.css';
+import { ErrorMessage } from '../ErrorMessage';
 
 type WelcomeScreenProps = {
     onCityClick: (city: string) => Promise<void>;
