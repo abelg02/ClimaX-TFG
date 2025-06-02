@@ -13,81 +13,87 @@ import { UVIndex } from '../components/UVIndex';
 import { WeatherAlerts } from '../components/WeatherAlerts';
 import { getWeatherStyles } from '../utils/weatherStyles';
 import { WelcomeScreen } from '../components/WelcomeScreen';
+import { Menu } from '../components/Menu/Menu';
 
 export const Home = () => {
-    const { weatherData, loading, error, fetchWeather, resetWeather } = useWeather();
-    const [showWelcome, setShowWelcome] = useState(false);
+  const { weatherData, loading, error, fetchWeather, resetWeather, displayMode } = useWeather();
+  const [showWelcome, setShowWelcome] = useState(false);
 
-    const handleSearch = async (city: string) => {
-        try {
-            await fetchWeather(city);
-            setShowWelcome(false);
-        } catch (err) {
-            setShowWelcome(true);
-        }
-    };
+  const handleSearch = async (city: string) => {
+    try {
+      await fetchWeather(city);
+      setShowWelcome(false);
+    } catch (err) {
+      setShowWelcome(true);
+    }
+  };
 
-    useEffect(() => {
-        if (weatherData) {
-            const weatherCode = weatherData.current.condition.code;
-            const isDay = weatherData.current.is_day;
-            const weatherStyles = getWeatherStyles(weatherCode, isDay);
+  useEffect(() => {
+    if (weatherData) {
+      const weatherCode = weatherData.current.condition.code;
+      const isDay = weatherData.current.is_day;
+      const weatherStyles = getWeatherStyles(weatherCode, isDay);
 
-            document.documentElement.style.setProperty('--bg-gradient', weatherStyles.background);
-            // Forzamos el color de texto a negro o gris oscuro
-            document.documentElement.style.setProperty('--text-color', '#333333');
-            document.documentElement.style.setProperty('--card-bg', weatherStyles.cardBg);
-        } else {
-            // Establecer color de texto por defecto cuando no hay datos meteorológicos
-            document.documentElement.style.setProperty('--text-color', '#333333');
-        }
-    }, [weatherData]);
+      document.documentElement.style.setProperty('--bg-gradient', weatherStyles.background);
+      document.documentElement.style.setProperty('--text-color', '#333333');
+      document.documentElement.style.setProperty('--card-bg', weatherStyles.cardBg);
+    } else {
+      document.documentElement.style.setProperty('--text-color', '#333333');
+    }
+  }, [weatherData]);
 
-    return (
-        <div className={styles.container} style={{ color: '#333333' }}>
-            <SearchBar onSearch={handleSearch} loading={loading} />
+  if (showWelcome || !weatherData) {
+    return <WelcomeScreen onCityClick={handleSearch} showReset={false} />;
+  }
 
-            {error && <ErrorMessage message={error} />}
+  return (
+    <div className={styles.container} style={{ color: '#333333' }}>
+      <SearchBar onSearch={handleSearch} loading={loading} />
+      <Menu />
 
-            {weatherData ? (
-                <main style={{ color: '#333333' }}>
-                    <section style={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr',
-                        gap: '20px',
-                        marginBottom: '30px',
-                        color: '#333333'
-                    }}>
-                        <div>
-                            <CurrentWeather data={weatherData} />
+      {error && <ErrorMessage message={error} />}
 
-                            {weatherData?.current?.air_quality && (
-                                <AirQuality aqi={weatherData.current.air_quality['us-epa-index']} />
-                            )}
+      <main style={{ color: '#333333' }}>
+        {displayMode === 'all' || displayMode === 'temperature' ? (
+          <section style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '20px',
+            marginBottom: '30px',
+            color: '#333333'
+          }}>
+            <div>
+              <CurrentWeather data={weatherData} />
+              {weatherData?.current?.air_quality && (
+                <AirQuality aqi={weatherData.current.air_quality['us-epa-index']} />
+              )}
+              {weatherData?.current?.uv && (
+                <UVIndex uv={weatherData.current.uv} />
+              )}
+            </div>
+            <TemperatureChart
+              hourlyData={weatherData.forecast.forecastday[0].hour.map((hour) => ({
+                time: `${new Date(hour.time).getHours()}h`,
+                temp: hour.temp_c
+              }))}
+            />
+          </section>
+        ) : null}
 
-                            {weatherData?.current?.uv && (
-                                <UVIndex uv={weatherData.current.uv} />
-                            )}
-                        </div>
+        {(displayMode === 'all' || displayMode === 'humidity') && (
+          <HourlyForecast
+            hours={weatherData.forecast.forecastday[0].hour}
+            displayMode={displayMode}
+          />
+        )}
 
-                        <TemperatureChart
-                            hourlyData={weatherData.forecast.forecastday[0].hour.map((hour) => ({
-                                time: `${new Date(hour.time).getHours()}h`,
-                                temp: hour.temp_c
-                            }))}
-                        />
-                    </section>
-
-                    <HourlyForecast hours={weatherData.forecast.forecastday[0].hour} />
-                    <WeeklyForecast days={weatherData.forecast.forecastday} />
-                    <WeatherAlerts weatherData={weatherData} />
-                </main>
-            ) : (
-                <WelcomeScreen
-                    onCityClick={handleSearch}
-                    showReset={false}
-                />
-            )}
-        </div>
-    );
+        {displayMode === 'all' && (
+          <>
+            <WeeklyForecast days={weatherData.forecast.forecastday} />
+            <WeatherAlerts weatherData={weatherData} />
+          </>
+        )}
+      </main>
+    </div>
+  );
 };

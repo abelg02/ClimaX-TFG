@@ -3,11 +3,12 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Auth } from './components/Auth/Auth';
-import { onAuthStateChange, auth } from './services/firebase';
+import { onAuthStateChange } from './services/firebase';
 import { RegionalMap } from './components/RegionalMap';
-import styles from './pages/Home.module.css';
+import { Menu } from './components/Menu/Menu';
+import { SearchBar } from './components/SearchBar';
 import { useWeather } from './context/WeatherContext';
-import { SearchBar } from './components/SearchBar'; // ✅ Asegúrate de que esté bien importado
+import styles from './pages/Home.module.css';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -32,17 +33,6 @@ function App() {
         navigate('/');
     };
 
-    const handleLogout = async () => {
-        try {
-            await auth.signOut();
-            setIsAuthenticated(false);
-            resetWeather();
-            navigate('/');
-        } catch (error) {
-            console.error("Error al cerrar sesión:", error);
-        }
-    };
-
     if (loading) {
         return <div className={styles.loadingMessage}>Cargando...</div>;
     }
@@ -51,10 +41,8 @@ function App() {
         <div className="App">
             {isAuthenticated && (
                 <>
-                    <SearchBar onSearch={() => {}} loading={false} /> {/* ✅ Ahora solo aparece cuando está autenticado */}
-                    <button onClick={handleLogout} className={styles.logoutButton}>
-                        Cerrar sesión
-                    </button>
+                    <SearchBar onSearch={() => {}} loading={false} />
+                    <Menu />
                 </>
             )}
             {isAuthenticated ? (
