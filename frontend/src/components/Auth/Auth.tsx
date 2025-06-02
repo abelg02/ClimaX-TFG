@@ -1,6 +1,6 @@
 // frontend/src/components/Auth/Auth.tsx
 import { useState } from 'react';
-import styles from '../../pages/Home.module.css';
+import styles from './Auth.module.css';
 import { registerUser, loginUser } from '../../services/firebase';
 
 export const Auth = ({ onLogin }: { onLogin: () => void }) => {
