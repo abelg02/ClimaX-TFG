@@ -87,11 +87,12 @@ export const Home = () => {
           />
         )}
 
+        {(displayMode === 'all' || displayMode === 'weekly') && (
+          <WeeklyForecast days={weatherData.forecast.forecastday} />
+        )}
+
         {displayMode === 'all' && (
-          <>
-            <WeeklyForecast days={weatherData.forecast.forecastday} />
-            <WeatherAlerts weatherData={weatherData} />
-          </>
+          <WeatherAlerts weatherData={weatherData} />
         )}
       </main>
     </div>

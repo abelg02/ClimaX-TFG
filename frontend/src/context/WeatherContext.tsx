@@ -8,10 +8,10 @@ type WeatherContextType = {
   weatherData: WeatherData | null;
   loading: boolean;
   error: string | null;
-  displayMode: 'all' | 'temperature' | 'humidity' | 'wind';
+  displayMode: 'all' | 'temperature' | 'humidity' | 'weekly';
   fetchWeather: (city: string) => Promise<void>;
   resetWeather: () => void;
-  setDisplayMode: (mode: 'all' | 'temperature' | 'humidity' | 'wind') => void;
+  setDisplayMode: (mode: 'all' | 'temperature' | 'humidity' | 'weekly') => void;
 };
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
@@ -20,7 +20,7 @@ export const WeatherProvider = ({ children }: { children: ReactNode }) => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [displayMode, setDisplayMode] = useState<'all' | 'temperature' | 'humidity' | 'wind'>('all');
+  const [displayMode, setDisplayMode] = useState<'all' | 'temperature' | 'humidity' | 'weekly'>('all');
 
   const fetchWeather = async (city: string) => {
     if (!city.trim()) return;
