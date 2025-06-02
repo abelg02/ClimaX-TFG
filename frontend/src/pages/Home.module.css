@@ -2137,3 +2137,189 @@ body {
         font-size: 1.3rem;
     }
 }
+/* Weekly Forecast Styles */
+.weeklyForecast {
+    margin: 0 auto 30px;
+    width: calc(100% - 40px);
+}
+
+.sectionTitle {
+    margin: 20px 0 20px 20px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.forecastContainer {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.forecastCard {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.forecastCard:last-child {
+    border-bottom: none;
+}
+
+.forecastHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.forecastHeader:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.forecastCard:hover {
+    background-color: #f2f2f2;
+    transform: translateY(-2px);
+}
+
+.dayInfo {
+    display: flex;
+    flex-direction: column;
+    width: 120px;
+}
+
+.dayName {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.today {
+    font-weight: 600;
+    color: #007bff;
+}
+
+.date {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 3px;
+}
+
+.weatherCondition {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    margin: 0 15px;
+}
+
+.weatherIcon {
+    width: 30px;
+    height: 30px;
+    margin-right: 15px;
+}
+
+.conditionText {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.temperatures {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 150px;
+    justify-content: flex-end;
+}
+
+.maxTemp {
+    font-weight: 600;
+    color: var(--text-color);
+    min-width: 30px;
+    text-align: right;
+}
+
+.minTemp {
+    color: #999;
+    min-width: 30px;
+    text-align: right;
+}
+
+.expandIcon {
+    width: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.dayDetails {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: fadeIn 0.3s ease;
+}
+
+.detailGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.detailColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detailIcon {
+    font-size: 1.5rem;
+    width: 40px;
+    text-align: center;
+}
+
+.detailLabel {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.detailValue {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.collapseButton {
+    display: block;
+    margin: 15px auto 0;
+    padding: 8px 20px;
+    background: transparent;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    border-radius: 20px;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+}
+
+.collapseButton:hover {
+    background: rgba(0, 123, 255, 0.1);
+    border-color: rgba(0, 123, 255, 0.5);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
