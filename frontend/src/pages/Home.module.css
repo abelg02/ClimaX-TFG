@@ -1008,15 +1008,15 @@ body {
 
 /* Home.module.css - Solo los estilos nuevos para la pantalla de bienvenida */
 .welcomeScreen {
-    width: 100vw; /* Usamos viewport width para cubrir todo el ancho */
+    width: 100vw;
     min-height: calc(100vh - 60px);
     background: white;
     padding: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: -20px 0 0 -20px; /* Compensamos el padding del container */
-    position: absolute; /* Aseguramos que cubra todo */
+    margin: 0;
+    position: absolute;
     left: 0;
     right: 0;
 }
