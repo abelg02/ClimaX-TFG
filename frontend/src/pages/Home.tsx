@@ -1,4 +1,3 @@
-// frontend/src/pages/Home.tsx
 import { useEffect, useState } from 'react';
 import styles from './Home.module.css';
 import { SearchBar } from '../components/SearchBar';
@@ -52,14 +51,19 @@ export const Home = () => {
 
   if (showWelcome || !weatherData) {
     return (
-      <>
+      <div className={styles.container}>
         <SearchBar onSearch={handleSearch} loading={loading} />
         <Menu />
         {(error || localError) && (
           <ErrorMessage message={error || localError || ''} onClose={clearError} />
         )}
-        <WelcomeScreen onCityClick={handleSearch} showReset={false} />
-      </>
+        <WelcomeScreen
+          onCityClick={handleSearch}
+          showReset={false}
+          error={error || localError || ''}
+          onClearError={clearError}
+        />
+      </div>
     );
   }
 

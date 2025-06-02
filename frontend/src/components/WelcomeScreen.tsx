@@ -1,4 +1,3 @@
-// frontend/src/components/WelcomeScreen.tsx
 import { useState } from 'react';
 import styles from '../pages/Home.module.css';
 import { ErrorMessage } from './ErrorMessage';
