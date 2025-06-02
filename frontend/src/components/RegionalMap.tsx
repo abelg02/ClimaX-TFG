@@ -1,3 +1,4 @@
+// frontend/src/components/RegionalMap.tsx
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -6,6 +7,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherForecast } from '../services/weatherService';
 import styles from '../pages/Home.module.css';
 import { SearchBar } from './SearchBar';
+import { ErrorMessage } from './ErrorMessage';
 
 const ZoomController = ({ zoomLevel }: { zoomLevel: number }) => {
   const map = useMap();
@@ -69,9 +71,11 @@ export const RegionalMap = () => {
   const [cities, setCities] = useState<Array<{name: string, lat: number, lon: number, temp?: number, condition?: string}>>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchCityData = async (cityName: string) => {
     setSearchLoading(true);
+    setError(null);
     try {
       const data = await getWeatherForecast(cityName);
 
@@ -86,7 +90,6 @@ export const RegionalMap = () => {
         feelslike: data.current?.feelslike_c
       };
 
-      // Actualizar la URL para reflejar la nueva ciudad
       navigate(`/map/${encodeURIComponent(data.location.region)}`, {
         state: {
           cityData: {
@@ -102,7 +105,6 @@ export const RegionalMap = () => {
       setSelectedCity(newCity.name);
       setWeatherData(newCity);
 
-      // Generar ciudades cercanas
       const nearbyCities = [
         { name: `${newCity.name} Norte`, lat: newCity.lat + 0.2, lon: newCity.lon + 0.1 },
         { name: `${newCity.name} Sur`, lat: newCity.lat - 0.2, lon: newCity.lon - 0.1 },
@@ -133,6 +135,7 @@ export const RegionalMap = () => {
 
     } catch (error) {
       console.error('Error fetching city data:', error);
+      setError('No se pudo encontrar el clima para esta ciudad');
     } finally {
       setSearchLoading(false);
     }
@@ -147,6 +150,7 @@ export const RegionalMap = () => {
       if (!region) return;
 
       setLoading(true);
+      setError(null);
 
       try {
         const state = location.state;
@@ -197,7 +201,6 @@ export const RegionalMap = () => {
 
           setCities([mainCity, ...citiesWithWeather]);
         } else {
-          // Si no hay cityData en el estado, buscar por la región
           const data = await getWeatherForecast(region);
           const mainCity = {
             name: data.location.name,
@@ -244,6 +247,7 @@ export const RegionalMap = () => {
         }
       } catch (error) {
         console.error('Error loading map data:', error);
+        setError('No se pudieron cargar los datos meteorológicos para esta región');
       } finally {
         setLoading(false);
       }
@@ -258,6 +262,10 @@ export const RegionalMap = () => {
       setSelectedCity(cityName);
       setMapCenter([city.lat, city.lon]);
     }
+  };
+
+  const clearError = () => {
+    setError(null);
   };
 
   if (loading) {
@@ -285,6 +293,8 @@ export const RegionalMap = () => {
 
   return (
     <div className={styles.mapPageContainer}>
+      {error && <ErrorMessage message={error} onClose={clearError} />}
+
       <div className={styles.mapHeader}>
         <button
           onClick={() => navigate(-1)}

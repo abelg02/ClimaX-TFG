@@ -16,14 +16,17 @@ import { WelcomeScreen } from '../components/WelcomeScreen';
 import { Menu } from '../components/Menu/Menu';
 
 export const Home = () => {
-  const { weatherData, loading, error, fetchWeather, resetWeather, displayMode } = useWeather();
+  const { weatherData, loading, error, fetchWeather, resetWeather, displayMode, setError } = useWeather();
   const [showWelcome, setShowWelcome] = useState(false);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSearch = async (city: string) => {
     try {
+      setLocalError(null);
       await fetchWeather(city);
       setShowWelcome(false);
     } catch (err) {
+      setLocalError('No se pudo encontrar el clima para esta ciudad');
       setShowWelcome(true);
     }
   };
@@ -42,10 +45,19 @@ export const Home = () => {
     }
   }, [weatherData]);
 
+  const clearError = () => {
+    setLocalError(null);
+    setError(null);
+  };
+
   if (showWelcome || !weatherData) {
     return (
       <>
         <SearchBar onSearch={handleSearch} loading={loading} />
+        <Menu />
+        {(error || localError) && (
+          <ErrorMessage message={error || localError || ''} onClose={clearError} />
+        )}
         <WelcomeScreen onCityClick={handleSearch} showReset={false} />
       </>
     );
@@ -55,8 +67,9 @@ export const Home = () => {
     <div className={styles.container} style={{ color: '#333333' }}>
       <SearchBar onSearch={handleSearch} loading={loading} />
       <Menu />
-
-      {error && <ErrorMessage message={error} />}
+      {(error || localError) && (
+        <ErrorMessage message={error || localError || ''} onClose={clearError} />
+      )}
 
       <main style={{ color: '#333333' }}>
         {displayMode === 'all' || displayMode === 'temperature' ? (

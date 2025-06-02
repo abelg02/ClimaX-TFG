@@ -1,19 +1,29 @@
 // frontend/src/components/WelcomeScreen.tsx
 import { useState } from 'react';
 import styles from '../pages/Home.module.css';
+import { ErrorMessage } from './ErrorMessage';
 
 type WelcomeScreenProps = {
-    onCityClick: (city: string) => void;
+    onCityClick: (city: string) => Promise<void>;
     showReset?: boolean;
     onReset?: () => void;
+    error?: string;
+    onClearError?: () => void;
 };
 
 type FeatureModalType = 'temperature' | 'wind' | 'precipitation' | 'alerts' | null;
 
-export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: WelcomeScreenProps) => {
+export const WelcomeScreen = ({
+    onCityClick,
+    showReset = false,
+    onReset,
+    error,
+    onClearError
+}: WelcomeScreenProps) => {
     const [activeFeature, setActiveFeature] = useState<FeatureModalType>(null);
     const [quizAnswer, setQuizAnswer] = useState('');
     const [quizResult, setQuizResult] = useState('');
+    const [localError, setLocalError] = useState('');
 
     const popularCities = [
         { name: 'Madrid', country: 'Spain' },
@@ -46,6 +56,20 @@ export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: Welco
         } else {
             setQuizResult(`Incorrecto. La respuesta correcta es ${correctAnswers[activeFeature!]}.`);
         }
+    };
+
+    const handleCitySearch = async (city: string) => {
+        try {
+            setLocalError('');
+            await onCityClick(city);
+        } catch (err) {
+            setLocalError('No se pudo encontrar el clima para esta ciudad');
+        }
+    };
+
+    const clearError = () => {
+        setLocalError('');
+        if (onClearError) onClearError();
     };
 
     const getFeatureContent = () => {
@@ -185,6 +209,10 @@ export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: Welco
 
     return (
         <div className={styles.welcomeScreen}>
+            {(error || localError) && (
+                <ErrorMessage message={error || localError} onClose={clearError} />
+            )}
+
             {showReset && (
                 <button onClick={onReset} className={styles.backButton}>
                     ← Volver al inicio
@@ -208,7 +236,7 @@ export const WelcomeScreen = ({ onCityClick, showReset = false, onReset }: Welco
                     {popularCities.map(city => (
                         <button
                             key={city.name}
-                            onClick={() => onCityClick(`${city.name}, ${city.country}`)}
+                            onClick={() => handleCitySearch(`${city.name}, ${city.country}`)}
                             className={styles.cityCard}
                         >
                             <span className={styles.cityName}>{city.name}</span>
