@@ -43,7 +43,12 @@ export const Home = () => {
   }, [weatherData]);
 
   if (showWelcome || !weatherData) {
-    return <WelcomeScreen onCityClick={handleSearch} showReset={false} />;
+    return (
+      <>
+        <SearchBar onSearch={handleSearch} loading={loading} />
+        <WelcomeScreen onCityClick={handleSearch} showReset={false} />
+      </>
+    );
   }
 
   return (
