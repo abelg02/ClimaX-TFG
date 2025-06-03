@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useWeather } from '../../context/WeatherContext';
 import { auth } from '../../services/firebase';
-import styles from '../../pages/Home.module.css';
+import styles from './Menu.module.css';
 
 type MenuItem = {
   icon: string;
