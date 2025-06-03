@@ -33,6 +33,10 @@ function App() {
         navigate('/');
     };
 
+    const handleLogoClick = () => {
+        resetWeather();
+    };
+
     if (loading) {
         return <div className={styles.loadingMessage}>Cargando...</div>;
     }
@@ -41,7 +45,7 @@ function App() {
         <div className="App">
             {isAuthenticated && (
                 <>
-                    <SearchBar onSearch={() => {}} loading={false} />
+                    <SearchBar onSearch={() => {}} loading={false} onLogoClick={handleLogoClick} />
                     <Menu />
                 </>
             )}

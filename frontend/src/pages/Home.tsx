@@ -1,3 +1,4 @@
+// frontend/src/pages/Home.tsx
 import { useEffect, useState } from 'react';
 import styles from './Home.module.css';
 import { SearchBar } from '../components/SearchBar';
@@ -17,9 +18,16 @@ import { useLocation } from 'react-router-dom';
 
 export const Home = () => {
   const { weatherData, loading, error, fetchWeather, resetWeather, displayMode, setError } = useWeather();
-  const [showWelcome, setShowWelcome] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(!weatherData);
   const [localError, setLocalError] = useState<string | null>(null);
   const location = useLocation();
+
+  useEffect(() => {
+    // Resetear showWelcome cuando se resetea el weatherData
+    if (!weatherData) {
+      setShowWelcome(true);
+    }
+  }, [weatherData]);
 
   useEffect(() => {
     // Si venimos del mapa con una ciudad, buscamos esa ciudad automáticamente
@@ -38,6 +46,10 @@ export const Home = () => {
       setLocalError('No se pudo encontrar el clima para esta ciudad');
       setShowWelcome(true);
     }
+  };
+
+  const handleLogoClick = () => {
+    resetWeather();
   };
 
   useEffect(() => {
@@ -62,7 +74,7 @@ export const Home = () => {
   if (showWelcome || !weatherData) {
     return (
       <div className={styles.container}>
-        <SearchBar onSearch={handleSearch} loading={loading} />
+        <SearchBar onSearch={handleSearch} loading={loading} onLogoClick={handleLogoClick} />
         <Menu />
         {(error || localError) && (
           <ErrorMessage message={error || localError || ''} onClose={clearError} />
@@ -79,7 +91,7 @@ export const Home = () => {
 
   return (
     <div className={styles.container} style={{ color: '#333333' }}>
-      <SearchBar onSearch={handleSearch} loading={loading} />
+      <SearchBar onSearch={handleSearch} loading={loading} onLogoClick={handleLogoClick} />
       <Menu />
       {(error || localError) && (
         <ErrorMessage message={error || localError || ''} onClose={clearError} />

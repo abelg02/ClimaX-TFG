@@ -1,3 +1,4 @@
+// frontend/src/components/SearchBar.tsx
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import styles from '../pages/Home.module.css';
@@ -6,6 +7,7 @@ type SearchBarProps = {
     onSearch: (city: string) => void;
     loading: boolean;
     onSettingsClick?: () => void;
+    onLogoClick?: () => void;
 };
 
 type Suggestion = {
@@ -14,14 +16,13 @@ type Suggestion = {
     lon: string;
 };
 
-export const SearchBar = ({ onSearch, loading, onSettingsClick }: SearchBarProps) => {
+export const SearchBar = ({ onSearch, loading, onSettingsClick, onLogoClick }: SearchBarProps) => {
     const [city, setCity] = useState('');
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
     const searchRef = useRef<HTMLDivElement>(null);
 
-    // Fetch suggestions from Nominatim API
     const fetchSuggestions = async (query: string) => {
         if (query.length < 2) {
             setSuggestions([]);
@@ -40,7 +41,6 @@ export const SearchBar = ({ onSearch, loading, onSettingsClick }: SearchBarProps
         }
     };
 
-    // Debounce the input to avoid too many API calls
     useEffect(() => {
         const timer = setTimeout(() => {
             fetchSuggestions(city);
@@ -49,7 +49,6 @@ export const SearchBar = ({ onSearch, loading, onSettingsClick }: SearchBarProps
         return () => clearTimeout(timer);
     }, [city]);
 
-    // Handle clicks outside the search bar to close suggestions
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -98,7 +97,14 @@ export const SearchBar = ({ onSearch, loading, onSettingsClick }: SearchBarProps
 
     return (
         <div className={styles.searchContainer} ref={searchRef}>
-            <a href="/" className={styles.appTitle}>
+            <a
+                href="/"
+                className={styles.appTitle}
+                onClick={(e) => {
+                    e.preventDefault();
+                    onLogoClick?.();
+                }}
+            >
                 <span>🌤</span> ClimaX
             </a>
 
