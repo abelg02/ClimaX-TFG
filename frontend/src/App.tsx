@@ -6,7 +6,7 @@ import { Auth } from './components/Auth/Auth';
 import { onAuthStateChange } from './services/firebase';
 import { RegionalMap } from './components/RegionalMap/RegionalMap';
 import { Menu } from './components/Menu/Menu';
-import { SearchBar } from './components/SearchBar';
+import { SearchBar } from './components/search/SearchBar';
 import { useWeather } from './context/WeatherContext';
 import styles from './pages/Home.module.css';
 

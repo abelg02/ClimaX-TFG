@@ -1,7 +1,7 @@
 // frontend/src/pages/Home.tsx
 import { useEffect, useState } from 'react';
 import styles from './Home.module.css';
-import { SearchBar } from '../components/SearchBar';
+import { SearchBar } from '../components/search/SearchBar';
 import { CurrentWeather } from '../components/CurrentWeather';
 import { TemperatureChart } from '../components/TemperatureChart';
 import { HourlyForecast } from '../components/HourlyForecast';

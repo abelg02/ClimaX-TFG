@@ -1,7 +1,7 @@
-// frontend/src/components/SearchBar.tsx
+// frontend/src/components/search/SearchBar.tsx
 import { useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
-import styles from '../pages/Home.module.css';
+import styles from './SearchBar.module.css';
 
 type SearchBarProps = {
     onSearch: (city: string) => void;
@@ -149,8 +149,12 @@ export const SearchBar = ({ onSearch, loading, onSettingsClick, onLogoClick }: S
             </form>
 
             <button
-                onClick={onSettingsClick}
                 className={styles.settingsButton}
+                style={{
+                    opacity: 0,
+                    pointerEvents: 'none',
+                    cursor: 'default'
+                }}
             >
                 ⚙️
             </button>

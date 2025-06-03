@@ -6,7 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherForecast } from '../../services/weatherService';
 import styles from './RegionalMap.module.css';
-import { SearchBar } from '../SearchBar';
+import { SearchBar } from '../search/SearchBar';
 import { ErrorMessage } from '../ErrorMessage';
 
 const ZoomController = ({ zoomLevel }: { zoomLevel: number }) => {
