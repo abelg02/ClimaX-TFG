@@ -12,8 +12,8 @@ import { AirQuality } from '../components/AirQuality';
 import { UVIndex } from '../components/UVIndex';
 import { WeatherAlerts } from '../components/WeatherAlerts';
 import { getWeatherStyles } from '../utils/weatherStyles';
-import { WelcomeScreen } from '../components/WelcomeScreen/WelcomeScreen';
-import { Menu } from '../components/Menu/Menu';
+import { WelcomeScreen } from '../components/welcomeScreen/WelcomeScreen';
+import { Menu } from '../components/menu/Menu';
 import { useLocation } from 'react-router-dom';
 
 export const Home = () => {

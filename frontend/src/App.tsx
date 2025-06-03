@@ -2,10 +2,10 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Home } from './pages/Home';
-import { Auth } from './components/Auth/Auth';
+import { Auth } from './components/auth/Auth';
 import { onAuthStateChange } from './services/firebase';
-import { RegionalMap } from './components/RegionalMap/RegionalMap';
-import { Menu } from './components/Menu/Menu';
+import { RegionalMap } from './components/regionalMap/RegionalMap';
+import { Menu } from './components/menu/Menu';
 import { SearchBar } from './components/search/SearchBar';
 import { useWeather } from './context/WeatherContext';
 import styles from './pages/Home.module.css';
