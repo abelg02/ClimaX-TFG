@@ -321,6 +321,7 @@ export const RegionalMap = () => {
             center={mapCenter}
             zoom={zoomLevel}
             style={{ height: '100%', width: '100%', borderRadius: '12px' }}
+            zoomControl={false}
           >
             <ZoomController zoomLevel={zoomLevel} />
             <TileLayer
