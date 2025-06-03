@@ -1,8 +1,8 @@
-/* Estilos específicos para el mapa regional */
+/* frontend/src/components/RegionalMap/RegionalMap.module.css */
 .mapPageContainer {
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto;
+  margin: 70px auto 0; /* Añadido margen superior de 70px para evitar solapamiento */
   padding: 20px;
 }
 
@@ -20,6 +20,7 @@
   color: #333;
   text-align: center;
   flex-grow: 1;
+  margin-right: 350px;
   padding: 0 20px;
 }
 
@@ -27,7 +28,8 @@
   display: grid;
   grid-template-columns: 1fr 300px;
   gap: 20px;
-  height: 600px;
+  height: calc(80vh - 100px); /* Altura reducida */
+  min-height: 450px; /* Altura mínima */
 }
 
 .mapContainerWrapper {
