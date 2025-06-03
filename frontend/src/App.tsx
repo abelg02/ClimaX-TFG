@@ -4,7 +4,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { Auth } from './components/Auth/Auth';
 import { onAuthStateChange } from './services/firebase';
-import { RegionalMap } from './components/RegionalMap';
+import { RegionalMap } from './components/RegionalMap/RegionalMap';
 import { Menu } from './components/Menu/Menu';
 import { SearchBar } from './components/SearchBar';
 import { useWeather } from './context/WeatherContext';

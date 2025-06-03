@@ -4,10 +4,10 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-le
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getWeatherForecast } from '../services/weatherService';
-import styles from '../pages/Home.module.css';
-import { SearchBar } from './SearchBar';
-import { ErrorMessage } from './ErrorMessage';
+import { getWeatherForecast } from '../../services/weatherService';
+import styles from './RegionalMap.module.css';
+import { SearchBar } from '../SearchBar';
+import { ErrorMessage } from '../ErrorMessage';
 
 const ZoomController = ({ zoomLevel }: { zoomLevel: number }) => {
   const map = useMap();

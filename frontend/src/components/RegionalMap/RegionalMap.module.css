@@ -1,0 +1,315 @@
+/* Estilos específicos para el mapa regional */
+.mapPageContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.mapTitle {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+  text-align: center;
+  flex-grow: 1;
+  padding: 0 20px;
+}
+
+.mapLayout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  height: 600px;
+}
+
+.mapContainerWrapper {
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.mapSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.weatherSummary {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.summaryContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.summaryIcon {
+  font-size: 2.5rem;
+}
+
+.summaryTemp {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.summaryText {
+  font-size: 1rem;
+  color: #666;
+}
+
+.summaryDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.detailItem span:first-child {
+  color: #666;
+}
+
+.detailItem span:last-child {
+  font-weight: 500;
+}
+
+.nearbyCities {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  flex-grow: 1;
+}
+
+.cityList {
+  margin-top: 15px;
+}
+
+.cityItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.cityItem:hover {
+  background: #f0f0ff;
+}
+
+.selectedCity {
+  background: #e6e6ff;
+  font-weight: 500;
+  border-left: 3px solid #5a4fcf;
+}
+
+.cityName {
+  color: #333;
+}
+
+.cityTemp {
+  font-weight: bold;
+  color: #5a4fcf;
+}
+
+.mapLegend {
+  margin-top: 20px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.legendScale {
+  margin-top: 15px;
+}
+
+.legendGradient {
+  height: 20px;
+  width: 100%;
+  border-radius: 10px;
+  background: linear-gradient(to right,
+    hsl(240, 100%, 50%) 0%,
+    hsl(200, 100%, 50%) 25%,
+    hsl(160, 100%, 50%) 50%,
+    hsl(80, 100%, 50%) 75%,
+    hsl(0, 100%, 50%) 100%);
+}
+
+.legendLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.legendItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+
+.legendLabel {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.customPopup {
+  border-radius: 12px;
+  padding: 0;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.popupContent {
+  padding: 15px;
+  min-width: 200px;
+}
+
+.popupContent h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.popupWeather {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.weatherIcon {
+  font-size: 2rem;
+}
+
+.weatherTemp {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.weatherCondition {
+  margin: 5px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.weatherDetails {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+
+.mapLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 20px;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #5a4fcf;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.mapErrorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  gap: 20px;
+  text-align: center;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  background: rgba(0, 123, 255, 0.1);
+  transform: translateX(-3px);
+}
+
+.searchContainer {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .mapLayout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .mapSidebar {
+    margin-top: 20px;
+  }
+
+  .mapTitle {
+    font-size: 1.4rem;
+  }
+}
