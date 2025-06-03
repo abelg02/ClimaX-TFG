@@ -1,4 +1,4 @@
-// frontend/src/components/RegionalMap.tsx
+// frontend/src/components/RegionalMap/RegionalMap.tsx
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -261,6 +261,17 @@ export const RegionalMap = () => {
     if (city) {
       setSelectedCity(cityName);
       setMapCenter([city.lat, city.lon]);
+      // Actualizar el estado de la ruta con la ciudad seleccionada
+      navigate(`/map/${encodeURIComponent(region || '')}`, {
+        state: {
+          cityData: {
+            name: city.name,
+            lat: city.lat,
+            lon: city.lon
+          }
+        },
+        replace: true
+      });
     }
   };
 

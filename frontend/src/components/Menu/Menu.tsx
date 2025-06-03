@@ -1,4 +1,3 @@
-// frontend/src/components/Menu/Menu.tsx
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useWeather } from '../../context/WeatherContext';
@@ -30,6 +29,19 @@ export const Menu = () => {
   const isMapPage = location.pathname.includes('/map');
   const isWelcomePage = !weatherData && !isMapPage;
 
+  const getLastCity = () => {
+    if (location.state?.cityData) {
+      return location.state.cityData;
+    }
+    return weatherData?.location ? {
+      name: weatherData.location.name,
+      lat: weatherData.location.lat,
+      lon: weatherData.location.lon
+    } : null;
+  };
+
+  const lastCity = getLastCity();
+
   const menuItems: MenuItem[] = [
     {
       icon: '⚙️',
@@ -44,9 +56,17 @@ export const Menu = () => {
         label: 'Mostrar todo',
         action: () => {
           setDisplayMode('all');
-          navigate('/');
-        },
-        requiresWeatherData: true
+          if (lastCity) {
+            navigate('/', {
+              state: {
+                cityData: lastCity,
+                fromMap: true
+              }
+            });
+          } else {
+            navigate('/');
+          }
+        }
       }
     ] : []),
     ...(!isMapPage && !isWelcomePage ? [
@@ -126,7 +146,7 @@ export const Menu = () => {
       {isOpen && (
         <div className={styles.menuDropdown}>
           {menuItems
-            .filter(item => !item.requiresWeatherData || weatherData)
+            .filter(item => !item.requiresWeatherData || lastCity)
             .map((item, index) => (
               <button
                 key={index}

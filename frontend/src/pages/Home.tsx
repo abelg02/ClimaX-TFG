@@ -13,11 +13,21 @@ import { WeatherAlerts } from '../components/WeatherAlerts';
 import { getWeatherStyles } from '../utils/weatherStyles';
 import { WelcomeScreen } from '../components/WelcomeScreen/WelcomeScreen';
 import { Menu } from '../components/Menu/Menu';
+import { useLocation } from 'react-router-dom';
 
 export const Home = () => {
   const { weatherData, loading, error, fetchWeather, resetWeather, displayMode, setError } = useWeather();
   const [showWelcome, setShowWelcome] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Si venimos del mapa con una ciudad, buscamos esa ciudad automáticamente
+    if (location.state?.fromMap && location.state?.cityData) {
+      const { name } = location.state.cityData;
+      handleSearch(name);
+    }
+  }, [location.state]);
 
   const handleSearch = async (city: string) => {
     try {

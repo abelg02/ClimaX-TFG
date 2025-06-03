@@ -1,0 +1,128 @@
+/* components/search/SearchBar.module.css */
+.searchContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    background: #5a4fcf;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.appTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.appTitle span {
+    font-size: 1.5rem;
+}
+
+.searchForm {
+    display: flex;
+    flex: 1;
+    max-width: 600px;
+    margin: 0 15px;
+    position: relative;
+}
+
+.searchInputWrapper {
+    flex: 1;
+    position: relative;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 8px 15px 8px 35px;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    background: rgba(255,255,255,0.9);
+    color: #333;
+    outline: none;
+}
+
+.searchInputWithSuggestions {
+    border-radius: 20px 20px 0 0;
+}
+
+.searchButton {
+    padding: 8px 15px;
+    background: #3a30a8;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.searchButton:hover {
+    background: #2a2185;
+}
+
+.searchButton:disabled {
+    background: #7a72d3;
+    cursor: not-allowed;
+}
+
+.settingsButton {
+    background: rgba(255, 255, 255, 0.9);
+    color: #5a4fcf;
+    border: none;
+    border-radius: 20px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.settingsButton:hover {
+    background: white;
+    transform: translateY(-2px);
+}
+
+.suggestionsDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.suggestionItem {
+    padding: 10px 15px;
+    cursor: pointer;
+    color: #333;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease;
+}
+
+.suggestionItem:hover,
+.selectedSuggestion {
+    background-color: #f5f5ff;
+}
