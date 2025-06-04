@@ -1,4 +1,4 @@
-// frontend/src/components/regionalMap/RegionalMap.tsx
+// frontend/src/pages/regionalMap/RegionalMap.tsx
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -6,8 +6,8 @@ import 'leaflet/dist/leaflet.css';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherForecast } from '../../services/weatherService';
 import styles from './RegionalMap.module.css';
-import { SearchBar } from '../search/SearchBar';
-import { ErrorMessage } from '../ErrorMessage';
+import { SearchBar } from '../../components/search/SearchBar';
+import { ErrorMessage } from '../../components/ErrorMessage';
 
 const ZoomController = ({ zoomLevel }: { zoomLevel: number }) => {
   const map = useMap();

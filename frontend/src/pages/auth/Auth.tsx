@@ -1,4 +1,4 @@
-// frontend/src/components/auth/Auth.tsx
+// frontend/src/pages/auth/Auth.tsx
 import { useState } from 'react';
 import styles from './Auth.module.css';
 import { registerUser, loginUser } from '../../services/firebase';

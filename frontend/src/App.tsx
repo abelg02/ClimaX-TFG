@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { Home } from './pages/home/Home';
-import { Auth } from './components/auth/Auth';
+import { Auth } from './pages/auth/Auth';
 import { onAuthStateChange } from './services/firebase';
-import { RegionalMap } from './components/regionalMap/RegionalMap';
+import { RegionalMap } from './pages/regionalMap/RegionalMap';
 import { Menu } from './components/menu/Menu';
 import { SearchBar } from './components/search/SearchBar';
 import { useWeather } from './context/WeatherContext';

@@ -12,7 +12,7 @@ import { AirQuality } from '../../components/weather/airQuality/AirQuality';
 import { UVIndex } from '../../components/weather/uvIndex/UVIndex';
 import { WeatherAlerts } from '../../components/weather/weatherAlerts/WeatherAlerts';
 import { getWeatherStyles } from '../../utils/weatherStyles';
-import { WelcomeScreen } from '../../components/welcomeScreen/WelcomeScreen';
+import { WelcomeScreen } from '../welcomeScreen/WelcomeScreen';
 import { Menu } from '../../components/menu/Menu';
 import { useLocation } from 'react-router-dom';
 
