@@ -1,4 +1,4 @@
-// frontend/src/components/RegionalMap/RegionalMap.tsx
+// frontend/src/components/regionalMap/RegionalMap.tsx
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';

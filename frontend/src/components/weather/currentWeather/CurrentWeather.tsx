@@ -1,6 +1,6 @@
-// frontend/src/components/CurrentWeather.tsx
+// frontend/src/components/weather/currentWeather/CurrentWeather.tsx
 import { useNavigate } from 'react-router-dom';
-import styles from '../pages/Home.module.css';
+import styles from '../../../pages/home/Home.module.css';
 
 type CurrentWeatherProps = {
     data: {

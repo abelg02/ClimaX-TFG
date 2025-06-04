@@ -1,5 +1,5 @@
-// frontend/src/components/HourlyForecast.tsx
-import styles from '../pages/Home.module.css';
+// frontend/src/components/weather/hourlyForecast/HourlyForecast.tsx
+import styles from '../../../pages/home/Home.module.css';
 
 type HourlyForecastProps = {
     hours: Array<{

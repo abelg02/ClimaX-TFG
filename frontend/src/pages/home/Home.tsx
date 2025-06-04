@@ -1,19 +1,19 @@
-// frontend/src/pages/Home.tsx
+// frontend/src/pages/home/Home.tsx
 import { useEffect, useState } from 'react';
 import styles from './Home.module.css';
-import { SearchBar } from '../components/search/SearchBar';
-import { CurrentWeather } from '../components/CurrentWeather';
-import { TemperatureChart } from '../components/TemperatureChart';
-import { HourlyForecast } from '../components/HourlyForecast';
-import { WeeklyForecast } from '../components/WeeklyForecast';
-import { useWeather } from '../context/WeatherContext';
-import { ErrorMessage } from '../components/ErrorMessage';
-import { AirQuality } from '../components/AirQuality';
-import { UVIndex } from '../components/UVIndex';
-import { WeatherAlerts } from '../components/WeatherAlerts';
-import { getWeatherStyles } from '../utils/weatherStyles';
-import { WelcomeScreen } from '../components/welcomeScreen/WelcomeScreen';
-import { Menu } from '../components/menu/Menu';
+import { SearchBar } from '../../components/search/SearchBar';
+import { CurrentWeather } from '../../components/weather/currentWeather/CurrentWeather';
+import { TemperatureChart } from '../../components/weather/temperatureChart/TemperatureChart';
+import { HourlyForecast } from '../../components/weather/hourlyForecast/HourlyForecast';
+import { WeeklyForecast } from '../../components/weather/weeklyForecast/WeeklyForecast';
+import { useWeather } from '../../context/WeatherContext';
+import { ErrorMessage } from '../../components/ErrorMessage';
+import { AirQuality } from '../../components/weather/airQuality/AirQuality';
+import { UVIndex } from '../../components/weather/uvIndex/UVIndex';
+import { WeatherAlerts } from '../../components/weather/weatherAlerts/WeatherAlerts';
+import { getWeatherStyles } from '../../utils/weatherStyles';
+import { WelcomeScreen } from '../../components/welcomeScreen/WelcomeScreen';
+import { Menu } from '../../components/menu/Menu';
 import { useLocation } from 'react-router-dom';
 
 export const Home = () => {

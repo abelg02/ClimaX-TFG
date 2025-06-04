@@ -1,3 +1,4 @@
+// frontend/src/components/menu/Menu.tsx
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useWeather } from '../../context/WeatherContext';

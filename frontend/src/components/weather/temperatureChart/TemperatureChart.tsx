@@ -1,3 +1,4 @@
+// frontend/src/components/weather/temperatureChart/TemperatureChart.tsx
 import {
     LineChart,
     Line,
@@ -7,7 +8,7 @@ import {
     ResponsiveContainer,
     CartesianGrid
 } from 'recharts';
-import styles from '../pages/Home.module.css';
+import styles from '../../../pages/home/Home.module.css';
 
 type TemperatureChartProps = {
     hourlyData: Array<{

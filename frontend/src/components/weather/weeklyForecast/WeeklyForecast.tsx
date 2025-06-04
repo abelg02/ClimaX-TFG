@@ -1,6 +1,6 @@
-// frontend/src/components/WeeklyForecast.tsx
+// frontend/src/components/weather/weeklyForecast/WeeklyForecast.tsx
 import { useState } from 'react';
-import styles from '../pages/Home.module.css';
+import styles from '../../../pages/home/Home.module.css';
 
 type WeeklyForecastProps = {
     days: Array<{

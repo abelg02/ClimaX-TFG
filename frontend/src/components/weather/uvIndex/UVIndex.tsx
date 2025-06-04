@@ -1,5 +1,5 @@
-// frontend/src/components/UVIndex.tsx
-import styles from '../pages/Home.module.css';
+// frontend/src/components/weather/uvIndex/UVIndex.tsx
+import styles from '../../../pages/home/Home.module.css';
 
 const getUVIndexLevel = (uv: number) => {
   if (uv <= 2) return 'Bajo';

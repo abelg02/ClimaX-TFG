@@ -1,6 +1,6 @@
-// frontend/src/components/WeatherAlerts.tsx
+// frontend/src/components/weather/weatherAlerts/WeatherAlerts.tsx
 import { useState, useEffect } from 'react';
-import styles from '../pages/Home.module.css';
+import styles from '../../../pages/home/Home.module.css';
 
 type AlertType = 'rain' | 'temp' | 'wind' | 'humidity';
 type ConditionType = 'above' | 'below';

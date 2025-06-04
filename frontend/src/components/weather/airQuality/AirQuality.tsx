@@ -1,5 +1,5 @@
-// frontend/src/components/AirQuality.tsx
-import styles from '../pages/Home.module.css';
+// frontend/src/components/weather/airQuality/AirQuality.tsx
+import styles from '../../../pages/home/Home.module.css';
 
 const getAirQualityText = (aqi: number) => {
   if (aqi <= 50) return 'Buena';
