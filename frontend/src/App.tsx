@@ -5,7 +5,7 @@ import { Home } from './pages/home/Home';
 import { Auth } from './pages/auth/Auth';
 import { onAuthStateChange } from './services/firebase';
 import { RegionalMap } from './pages/regionalMap/RegionalMap';
-import { Menu } from './components/menu/Menu';
+import { Menu } from './components/common/menu/Menu';
 import { SearchBar } from './components/search/SearchBar';
 import { useWeather } from './context/WeatherContext';
 import styles from './pages/home/Home.module.css';

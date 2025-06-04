@@ -1,5 +1,5 @@
-// frontend/src/components/ErrorMessage.tsx
-import styles from '../pages/home/Home.module.css';
+// frontend/src/components/common/errorMessage/ErrorMessage.tsx
+import styles from './ErrorMessage.module.css';
 
 type ErrorMessageProps = {
     message: string;

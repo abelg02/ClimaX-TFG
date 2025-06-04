@@ -1,8 +1,8 @@
-// frontend/src/components/menu/Menu.tsx
+// frontend/src/components/common/menu/Menu.tsx
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useWeather } from '../../context/WeatherContext';
-import { auth } from '../../services/firebase';
+import { useWeather } from '../../../context/WeatherContext';
+import { auth } from '../../../services/firebase';
 import styles from './Menu.module.css';
 
 type MenuItem = {

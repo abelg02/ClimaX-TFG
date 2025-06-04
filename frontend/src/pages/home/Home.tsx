@@ -7,13 +7,13 @@ import { TemperatureChart } from '../../components/weather/temperatureChart/Temp
 import { HourlyForecast } from '../../components/weather/hourlyForecast/HourlyForecast';
 import { WeeklyForecast } from '../../components/weather/weeklyForecast/WeeklyForecast';
 import { useWeather } from '../../context/WeatherContext';
-import { ErrorMessage } from '../../components/ErrorMessage';
+import { ErrorMessage } from '../../components/common/errorMessage/ErrorMessage';
 import { AirQuality } from '../../components/weather/airQuality/AirQuality';
 import { UVIndex } from '../../components/weather/uvIndex/UVIndex';
 import { WeatherAlerts } from '../../components/weather/weatherAlerts/WeatherAlerts';
 import { getWeatherStyles } from '../../utils/weatherStyles';
 import { WelcomeScreen } from '../welcomeScreen/WelcomeScreen';
-import { Menu } from '../../components/menu/Menu';
+import { Menu } from '../../components/common/menu/Menu';
 import { useLocation } from 'react-router-dom';
 
 export const Home = () => {

@@ -7,7 +7,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getWeatherForecast } from '../../services/weatherService';
 import styles from './RegionalMap.module.css';
 import { SearchBar } from '../../components/search/SearchBar';
-import { ErrorMessage } from '../../components/ErrorMessage';
+import { ErrorMessage } from '../../components/common/errorMessage/ErrorMessage';
 
 const ZoomController = ({ zoomLevel }: { zoomLevel: number }) => {
   const map = useMap();
