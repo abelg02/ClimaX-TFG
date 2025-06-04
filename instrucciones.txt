@@ -1,0 +1,30 @@
+1. Dependencias del Frontend (React)
+
+Archivo requirements.txt equivalente para frontend (Node.js)
+En el mundo de Node.js/React, no se usa requirements.txt como en Python. En su lugar, el package.json ya contiene todas las dependencias. Los usuarios
+solo necesitan ejecutar:
+
+npm install  # Con esto instalaremos todo automáticamente
+
+2. Dependencias del Backend (Spring Boot)
+Están en el pom.xml de mi proyecto Java. El usuario necesitará: Java 17 (en mi caso).
+Dependencias principales (Maven las descarga automáticamente):
+No necesitas instalarlas manualmente. Con "mvn clean install" Maven descargará todo lo necesario (Spring Boot, PostgreSQL, etc.).
+
+
+# ClimaxTFG - Aplicación Meteorológica
+## Requisitos
+- Backend: Java 17, Maven, PostgreSQL.
+- Frontend: Node.js (v16+), npm.
+
+## Configuración
+1. **Backend**:
+   - Editar `src/main/resources/application.properties` con tu API key de WeatherAPI y credenciales de PostgreSQL.
+   - Ejecutar ClimaxTfgApplication.
+
+2. **Frontend**:
+   - Ejecutar `npm install` y luego `npm run dev`.
+   - Configurar Firebase en `src/services/firebase.js`.
+
+## Dependencias
+- Todas las dependencias están en `pom.xml` (backend) y `package.json` (frontend).
