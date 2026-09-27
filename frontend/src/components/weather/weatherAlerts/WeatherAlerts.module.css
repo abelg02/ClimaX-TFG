@@ -1,0 +1,42 @@
+.alerts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.alert {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  border-left: 3px solid;
+}
+
+.alert strong {
+  font-weight: 600;
+}
+
+.alert p {
+  margin: 3px 0 0;
+  font-size: 0.87rem;
+  color: var(--muted);
+}
+
+.alert svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.warn {
+  border-left-color: #fbbf24;
+}
+.warn svg {
+  color: #fbbf24;
+}
+
+.danger {
+  border-left-color: #f43f5e;
+}
+.danger svg {
+  color: #f43f5e;
+}

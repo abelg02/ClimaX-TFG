@@ -1,0 +1,158 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 190px;
+  padding: 20px 22px;
+}
+
+.wide {
+  grid-column: span 2;
+}
+
+.value {
+  margin: 2px 0 0;
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.unit {
+  margin-left: 8px;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--muted);
+}
+
+.caption {
+  margin: auto 0 0;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.compass {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 104px;
+  height: 104px;
+}
+
+.needle {
+  transition: transform 1s var(--ease-out);
+}
+
+.sunArc {
+  width: 100%;
+  max-width: 280px;
+  max-height: 140px;
+  height: auto;
+  align-self: center;
+}
+
+.scaleWrap {
+  margin-top: 4px;
+}
+
+.scale {
+  position: relative;
+  height: 6px;
+  border-radius: 99px;
+}
+
+.scale i {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--text);
+  border: 3px solid var(--ink-0);
+  transform: translateY(-50%);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.4);
+}
+
+.scaleLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.62rem;
+  color: var(--faint);
+}
+
+.meter {
+  height: 6px;
+  border-radius: 99px;
+  background: rgb(255 255 255 / 0.07);
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+}
+
+.delta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text);
+}
+
+.pollutants {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 6px 0 0;
+}
+
+.pollutants div {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.04);
+}
+
+.pollutants dt {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.pollutants dd {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+}
+
+.pollutants small {
+  font-size: 0.6rem;
+  color: var(--faint);
+}
+
+@media (max-width: 1060px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .wide {
+    grid-column: auto;
+  }
+  .pollutants {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,99 +1,75 @@
-// frontend/src/components/weather/temperatureChart/TemperatureChart.tsx
-import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    Tooltip,
-    ResponsiveContainer,
-    CartesianGrid
-} from 'recharts';
-import styles from '../../../pages/home/Home.module.css';
+import { useId } from 'react';
+import type { Units } from '../../../types';
+import { formatTemp, toUnits } from '../../../utils/format';
+import { tempColor } from '../../../utils/weatherStyles';
 
-type TemperatureChartProps = {
-    hourlyData: Array<{
-        time: string;
-        temp: number;
-    }>;
+type Props = {
+  temperatures: number[];
+  columnWidth: number;
+  height?: number;
+  units: Units;
 };
 
-export const TemperatureChart = ({ hourlyData }: TemperatureChartProps) => {
-    // Calcular estadísticas
-    const maxTemp = Math.max(...hourlyData.map(item => item.temp));
-    const minTemp = Math.min(...hourlyData.map(item => item.temp));
-    const avgTemp = (hourlyData.reduce((sum, item) => sum + item.temp, 0) / hourlyData.length);
-    const maxTempTime = hourlyData.find(item => item.temp === maxTemp)?.time;
-    const minTempTime = hourlyData.find(item => item.temp === minTemp)?.time;
+/** Curva suave (Catmull-Rom) de la temperatura, coloreada con la escala térmica. */
+export const TemperatureChart = ({ temperatures, columnWidth, height = 96, units }: Props) => {
+  const id = useId();
+  const width = temperatures.length * columnWidth;
+  const top = 26;
+  const bottom = 12;
+  const values = temperatures.map((t) => toUnits(t, units));
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = Math.max(max - min, 4);
 
-    return (
-        <div className={styles.chartContainer}>
-            <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '1.5rem' }}>📈</div>
+  const points = values.map((v, i) => ({
+    x: i * columnWidth + columnWidth / 2,
+    y: top + (1 - (v - min) / range) * (height - top - bottom),
+  }));
 
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '1.2rem', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span>⏱</span> Temperatura por horas
-            </h3>
-            <div style={{ height: '250px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                        data={hourlyData}
-                        margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                        <XAxis dataKey="time" tick={{ fill: '#666' }} tickLine={{ stroke: '#eee' }} />
-                        <YAxis unit="°C" tick={{ fill: '#666' }} tickLine={{ stroke: '#eee' }} />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'white',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                                border: 'none'
-                            }}
-                        />
-                        <Line
-                            type="monotone"
-                            dataKey="temp"
-                            stroke="#007bff"
-                            strokeWidth={2}
-                            dot={{ r: 4 }}
-                            activeDot={{ r: 6, stroke: '#007bff', strokeWidth: 2, fill: 'white' }}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
+  let line = `M${points[0].x},${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] ?? points[i];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] ?? p2;
+    const c1 = { x: p1.x + (p2.x - p0.x) / 6, y: p1.y + (p2.y - p0.y) / 6 };
+    const c2 = { x: p2.x - (p3.x - p1.x) / 6, y: p2.y - (p3.y - p1.y) / 6 };
+    line += ` C${c1.x},${c1.y} ${c2.x},${c2.y} ${p2.x},${p2.y}`;
+  }
+  const last = points[points.length - 1];
+  const area = `${line} L${last.x},${height} L${points[0].x},${height} Z`;
 
-            {/* Sección de estadísticas */}
-            <div className={styles.chartStats}>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Máxima:</span>
-                    <span className={styles.statValue}>{maxTemp.toFixed(1)}°C</span>
-                    <span className={styles.statTime}>{maxTempTime}</span>
-                </div>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Media:</span>
-                    <span className={styles.statValue}>{avgTemp.toFixed(1)}°C</span>
-                </div>
-                <div className={styles.statItem}>
-                    <span className={styles.statLabel}>Mínima:</span>
-                    <span className={styles.statValue}>{minTemp.toFixed(1)}°C</span>
-                    <span className={styles.statTime}>{minTempTime}</span>
-                </div>
-            </div>
-
-            {/* Leyenda de temperatura modificada */}
-            <div className={styles.tempLegend}>
-                <div className={styles.legendItem}>
-                    <div className={styles.legendColor} style={{ backgroundColor: '#ff6b6b' }}></div>
-                    <span>Máxima del día</span>
-                </div>
-                <div className={styles.legendItem}>
-                    <div className={styles.legendColor} style={{ backgroundColor: '#007bff' }}></div>
-                    <span>Temperatura media</span>
-                </div>
-                <div className={styles.legendItem}>
-                    <div className={styles.legendColor} style={{ backgroundColor: '#6bc5ff' }}></div>
-                    <span>Mínima del día</span>
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id={`${id}-stroke`} x1="0" x2={width} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+          {temperatures.map((t, i) => (
+            <stop key={i} offset={points[i].x / width} stopColor={tempColor(t)} />
+          ))}
+        </linearGradient>
+        <linearGradient id={`${id}-fill`} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0" stopColor="white" stopOpacity="0.14" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${id}-fill)`} />
+      <path d={line} fill="none" stroke={`url(#${id}-stroke)`} strokeWidth="2.5" strokeLinecap="round" />
+      {points.map((p, i) => (
+        <g key={i}>
+          <circle cx={p.x} cy={p.y} r={i === 0 ? 4.5 : 2.6} fill={i === 0 ? 'var(--text)' : tempColor(temperatures[i])} />
+          <text
+            x={p.x}
+            y={p.y - 10}
+            textAnchor="middle"
+            fill="var(--text)"
+            fontSize="13"
+            fontWeight={i === 0 ? 700 : 500}
+            fontFamily="var(--font-display)"
+          >
+            {formatTemp(temperatures[i], units)}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
 };

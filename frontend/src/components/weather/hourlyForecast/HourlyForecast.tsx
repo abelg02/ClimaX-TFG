@@ -1,69 +1,46 @@
-// frontend/src/components/weather/hourlyForecast/HourlyForecast.tsx
-import styles from '../../../pages/home/Home.module.css';
+import type { Hour } from '../../../types';
+import { useWeather } from '../../../context/WeatherContext';
+import { TemperatureChart } from '../temperatureChart/TemperatureChart';
+import { WeatherIcon } from '../weatherIcon/WeatherIcon';
+import { formatTemp, hourOf } from '../../../utils/format';
+import styles from './HourlyForecast.module.css';
 
-type HourlyForecastProps = {
-    hours: Array<{
-        time: string;
-        temp_c: number;
-        humidity: number;
-        wind_kph: number;
-        condition: {
-            icon: string;
-            text: string;
-        };
-    }>;
-    displayMode: 'all' | 'temperature' | 'humidity' | 'wind';
-};
+const COLUMN = 64;
 
-export const HourlyForecast = ({ hours, displayMode }: HourlyForecastProps) => {
-    const getValueToShow = (hour: any) => {
-        switch (displayMode) {
-            case 'temperature':
-                return `${hour.temp_c}°`;
-            case 'humidity':
-                return `${hour.humidity}%`;
-            case 'wind':
-                return `${hour.wind_kph} km/h`;
-            default:
-                return `${hour.temp_c}°`;
-        }
-    };
+export const HourlyForecast = ({ hours }: { hours: Hour[] }) => {
+  const { units } = useWeather();
+  const temps = hours.map((h) => h.temperature);
+  const rainiest = Math.max(...hours.map((h) => h.precipitationProbability));
 
-    const getTitle = () => {
-        switch (displayMode) {
-            case 'temperature':
-                return '🌡️ Temperatura por horas';
-            case 'humidity':
-                return '💧 Humedad por horas';
-            case 'wind':
-                return '🌬️ Viento por horas';
-            default:
-                return '🕒 Pronóstico por horas (hoy)';
-        }
-    };
+  return (
+    <section className={`panel ${styles.panel}`} aria-labelledby="hourly-title">
+      <header className={styles.header}>
+        <h2 id="hourly-title" className="eyebrow">
+          Próximas 24 horas
+        </h2>
+        <p className={`${styles.range} mono`}>
+          {formatTemp(Math.min(...temps), units)} – {formatTemp(Math.max(...temps), units)}
+          {rainiest > 0 && <span> · lluvia máx. {rainiest} %</span>}
+        </p>
+      </header>
 
-    return (
-        <div className={styles.hourlyForecastContainer}>
-            <h3 style={{ margin: '0 0 15px 0', fontSize: '1.2rem', fontWeight: '600', color: '#444', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {getTitle()}
-            </h3>
-            <div style={{ display: 'flex', overflowX: 'auto', gap: '15px', padding: '15px 5px', scrollbarWidth: 'thin' }}>
-                {hours.map((hour) => (
-                    <div key={hour.time} className={styles.hourItem}>
-                        <p style={{ margin: '0 0 10px 0', fontSize: '0.9rem', fontWeight: '600', color: '#444' }}>
-                            {new Date(hour.time).getHours()}h
-                        </p>
-                        <img
-                            src={`https:${hour.condition.icon}`}
-                            alt={hour.condition.text}
-                            style={{ width: '40px', height: '40px', marginBottom: '10px' }}
-                        />
-                        <p style={{ margin: '0', fontSize: '1.1rem', fontWeight: '600' }}>
-                            {getValueToShow(hour)}
-                        </p>
-                    </div>
-                ))}
-            </div>
+      <div className={styles.scroller} tabIndex={0} aria-label="Previsión por horas, desplazable">
+        <div className={styles.track} style={{ width: hours.length * COLUMN }}>
+          <TemperatureChart temperatures={temps} columnWidth={COLUMN} units={units} />
+          <ol className={styles.columns}>
+            {hours.map((hour, i) => (
+              <li key={hour.time} style={{ width: COLUMN }}>
+                <WeatherIcon group={hour.condition.group} isDay={hour.isDay} size={30} animated={false} title={hour.condition.description} />
+                <span className={styles.rain} style={{ opacity: hour.precipitationProbability >= 10 ? 1 : 0.25 }}>
+                  <i style={{ height: `${Math.max(2, hour.precipitationProbability * 0.22)}px` }} />
+                  {hour.precipitationProbability}%
+                </span>
+                <span className={`${styles.hour} ${i === 0 ? styles.now : ''}`}>{i === 0 ? 'Ahora' : hourOf(hour.time)}</span>
+              </li>
+            ))}
+          </ol>
         </div>
-    );
+      </div>
+    </section>
+  );
 };

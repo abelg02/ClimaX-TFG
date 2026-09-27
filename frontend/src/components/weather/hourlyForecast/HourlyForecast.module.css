@@ -1,0 +1,83 @@
+.panel {
+  padding: 22px 0 14px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px;
+}
+
+.range {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.range span {
+  color: var(--cold);
+}
+
+.scroller {
+  overflow-x: auto;
+  padding: 10px 12px 8px;
+  mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 40px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 40px), transparent);
+  scroll-snap-type: x proximity;
+}
+
+.scroller:focus-visible {
+  outline-offset: -4px;
+}
+
+.track {
+  position: relative;
+}
+
+.columns {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.columns li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.rain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  height: 36px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--cold);
+}
+
+.rain i {
+  width: 4px;
+  border-radius: 2px;
+  background: var(--cold);
+}
+
+.hour {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.now {
+  color: var(--text);
+  font-weight: 700;
+}

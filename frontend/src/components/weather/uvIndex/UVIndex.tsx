@@ -1,49 +1,22 @@
-// frontend/src/components/weather/uvIndex/UVIndex.tsx
-import styles from '../../../pages/home/Home.module.css';
+import { Scale, Tile } from '../details/Tile';
 
-const getUVIndexLevel = (uv: number) => {
-  if (uv <= 2) return 'Bajo';
-  if (uv <= 5) return 'Moderado';
-  if (uv <= 7) return 'Alto';
-  if (uv <= 10) return 'Muy alto';
-  return 'Extremo';
+const level = (uv: number) => {
+  if (uv < 3) return { label: 'Bajo', advice: 'No hace falta protección especial.' };
+  if (uv < 6) return { label: 'Moderado', advice: 'Gafas de sol y crema si pasas tiempo fuera.' };
+  if (uv < 8) return { label: 'Alto', advice: 'Busca la sombra en las horas centrales.' };
+  if (uv < 11) return { label: 'Muy alto', advice: 'Evita el sol entre las 12:00 y las 17:00.' };
+  return { label: 'Extremo', advice: 'Evita exponerte al sol.' };
 };
 
-const getUVIndexColor = (uv: number) => {
-  if (uv <= 2) return '#4CAF50';
-  if (uv <= 5) return '#FFC107';
-  if (uv <= 7) return '#FF9800';
-  if (uv <= 10) return '#F44336';
-  return '#9C27B0';
-};
-
-const getUVProtectionTips = (uv: number) => {
-  if (uv <= 2) return 'No se requiere protección.';
-  if (uv <= 5) return 'Usa protector solar SPF 30+.';
-  if (uv <= 7) return 'Usa protector, gorra y gafas. Evita el sol al mediodía.';
-  if (uv <= 10) return 'Protección extrema necesaria. Evita exposición prolongada.';
-  return 'Evita completamente la exposición al sol.';
-};
-
-export const UVIndex = ({ uv }: { uv: number }) => {
+export const UVIndex = ({ uv, max }: { uv: number; max: number }) => {
+  const { label, advice } = level(uv);
   return (
-    <div className={styles.uvContainer}>
-      <h3 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <span>☀️</span> Índice UV: {uv} ({getUVIndexLevel(uv)})
-      </h3>
-      <div
-        className={styles.uvBar}
-        style={{ backgroundColor: getUVIndexColor(uv) }}
-      >
-        <div
-          className={styles.uvLevel}
-          style={{
-            width: `${Math.min(100, (uv / 12) * 100)}%`,
-            backgroundColor: getUVIndexColor(uv)
-          }}
-        />
-      </div>
-      <p>{getUVProtectionTips(uv)}</p>
-    </div>
+    <Tile title="Índice UV" value={Math.round(uv)} unit={label} caption={`${advice} Máximo hoy: ${Math.round(max)}.`}>
+      <Scale
+        position={uv / 11}
+        gradient="linear-gradient(90deg, #34d399, #facc15 30%, #fb923c 55%, #ef4444 75%, #a855f7)"
+        labels={['0', '3', '6', '8', '11+']}
+      />
+    </Tile>
   );
 };

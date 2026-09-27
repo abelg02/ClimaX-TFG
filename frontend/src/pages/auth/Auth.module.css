@@ -1,200 +1,183 @@
-/* frontend/src/components/auth/Auth.module.css */
-.authContainer {
-    max-width: 450px;
-    margin: 50px auto;
-    padding: 40px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
-    animation: fadeInUp 0.5s ease-out;
+.card {
+  width: 100%;
+  max-width: 440px;
+  margin: 5vh auto 0;
+  padding: 32px;
+  animation: rise 0.6s var(--ease-out) both;
 }
 
-.authContainer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 8px;
-    background: linear-gradient(90deg, #5a4fcf, #00d2ff);
+.title {
+  margin: 10px 0 0;
+  font-size: 2.2rem;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
 }
 
-.authHeader {
-    text-align: center;
-    margin-bottom: 30px;
+.title em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: var(--accent);
 }
 
-.authLogo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+.lead {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
-.authLogo h1 {
-    font-size: 2rem;
-    color: #5a4fcf;
-    margin: 0;
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
 }
 
-.authLogo span {
-    font-size: 2.5rem;
+.tabs button {
+  padding: 9px;
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--muted);
 }
 
-.authHeader h2 {
-    margin: 0 0 10px 0;
-    font-size: 1.5rem;
-    color: #333;
+.tabs button[aria-selected='true'] {
+  background: var(--text);
+  color: var(--ink-0);
 }
 
-.authHeader p {
-    margin: 0;
-    color: #666;
-    font-size: 0.95rem;
+.form {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
 }
 
-.authForm {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.form label {
+  display: grid;
+  gap: 6px;
 }
 
-.formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.form label span {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
 }
 
-.formGroup label {
-    font-size: 0.9rem;
-    color: #555;
-    font-weight: 500;
+.form input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: rgb(255 255 255 / 0.04);
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
-.inputWrapper {
-    position: relative;
+.form input::placeholder {
+  color: var(--faint);
 }
 
-.inputWrapper input {
-    width: 100%;
-    padding: 12px 15px 12px 45px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
+.form input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
-.inputWrapper input:focus {
-    border-color: #5a4fcf;
-    box-shadow: 0 0 0 3px rgba(90, 79, 207, 0.1);
-    outline: none;
+.error {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgb(251 113 133 / 0.12);
+  color: var(--danger);
+  font-size: 0.85rem;
 }
 
-.inputIcon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.1rem;
-    opacity: 0.7;
+.primary,
+.secondary {
+  height: 48px;
+  margin-top: 6px;
+  border-radius: 12px;
+  font-weight: 600;
 }
 
-.authButton {
-    width: 100%;
-    padding: 14px;
-    background: #5a4fcf;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
+.primary {
+  background: var(--accent);
+  color: var(--ink-0);
+  transition:
+    filter 0.2s,
+    transform 0.2s;
 }
 
-.authButton:hover {
-    background: #3a30a8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(90, 79, 207, 0.2);
+.primary:hover {
+  filter: brightness(1.1);
 }
 
-.authDivider {
-    display: flex;
-    align-items: center;
-    margin: 10px 0;
-    color: #999;
-    font-size: 0.9rem;
+.primary:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }
 
-.authDivider::before,
-.authDivider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid #eee;
+.secondary {
+  width: 100%;
+  margin-top: 24px;
+  border: 1px solid var(--line-strong);
 }
 
-.authDivider span {
-    padding: 0 15px;
+.secondary:hover {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
-.authFooter {
-    text-align: center;
-    margin-top: 25px;
-    font-size: 0.9rem;
-    color: #666;
+.skip {
+  display: block;
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-decoration: none;
 }
 
-.authToggle {
-    background: none;
-    border: none;
-    color: #5a4fcf;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 5px;
+.skip:hover {
+  color: var(--text);
 }
 
-.authToggle:hover {
-    text-decoration: underline;
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink-0);
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
-.authError {
-    padding: 12px 15px;
-    background: #ffebee;
-    color: #d32f2f;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
-    border-left: 4px solid #d32f2f;
+.favs {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.favs ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-    .authContainer {
-        padding: 30px 20px;
-        margin: 20px;
-    }
-
-    .authLogo h1 {
-        font-size: 1.8rem;
-    }
-
-    .authHeader h2 {
-        font-size: 1.3rem;
-    }
+.favs a {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  text-decoration: none;
+  font-size: 0.85rem;
 }

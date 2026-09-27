@@ -1,81 +1,110 @@
-// frontend/src/utils/weatherStyles.ts
-export const getWeatherStyles = (weatherCode: number, isDay: number) => {
-    // Códigos basados en la API de WeatherAPI (https://www.weatherapi.com/docs/weather_conditions.json)
-    const clearCodes = [1000];
-    const cloudyCodes = [1003, 1006, 1009];
-    const rainyCodes = [
-        1030, 1063, 1069, 1072, 1087, 1150, 1153, 1168, 1171,
-        1180, 1183, 1186, 1189, 1192, 1195, 1198, 1201, 1240,
-        1243, 1246, 1273, 1276
-    ];
-    const snowyCodes = [
-        1066, 1114, 1117, 1204, 1207, 1210, 1213, 1216, 1219,
-        1222, 1225, 1237, 1249, 1252, 1255, 1258, 1261, 1264,
-        1279, 1282
-    ];
-    const thunderCodes = [1087, 1273, 1276];
-    const foggyCodes = [1135, 1147];
+import type { Condition, ConditionGroup } from '../types';
 
-    // Determinar el tipo de clima
-    let weatherType = 'default';
-
-    if (clearCodes.includes(weatherCode)) {
-        weatherType = isDay ? 'clear-day' : 'clear-night';
-    } else if (cloudyCodes.includes(weatherCode)) {
-        weatherType = 'cloudy';
-    } else if (rainyCodes.includes(weatherCode)) {
-        weatherType = 'rainy';
-    } else if (snowyCodes.includes(weatherCode)) {
-        weatherType = 'snowy';
-    } else if (thunderCodes.includes(weatherCode)) {
-        weatherType = 'thunder';
-    } else if (foggyCodes.includes(weatherCode)) {
-        weatherType = 'foggy';
-    }
-
-    // Estilos para cada tipo de clima
-    const styles = {
-        'clear-day': {
-            background: 'linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.15)'
-        },
-        'clear-night': {
-            background: 'linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.1)'
-        },
-        'cloudy': {
-            background: 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.15)'
-        },
-        'rainy': {
-            background: 'linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.15)'
-        },
-        'snowy': {
-            background: 'linear-gradient(135deg, #E0EAFC 0%, #CFDEF3 100%)',
-            textColor: '#333',
-            cardBg: 'rgba(255, 255, 255, 0.7)'
-        },
-        'thunder': {
-            background: 'linear-gradient(135deg, #373B44 0%, #4286f4 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.1)'
-        },
-        'foggy': {
-            background: 'linear-gradient(135deg, #606c88 0%, #3f4c6b 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.1)'
-        },
-        'default': {
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-            textColor: '#fff',
-            cardBg: 'rgba(255, 255, 255, 0.15)'
-        }
-    };
-
-    return styles[weatherType] || styles['default'];
+// Mismos textos que WeatherCodes.java
+const CONDITIONS: Record<number, [string, ConditionGroup]> = {
+  0: ['Despejado', 'clear'],
+  1: ['Mayormente despejado', 'clear'],
+  2: ['Parcialmente nublado', 'partly'],
+  3: ['Cubierto', 'cloudy'],
+  45: ['Niebla', 'fog'],
+  48: ['Niebla con escarcha', 'fog'],
+  51: ['Llovizna débil', 'drizzle'],
+  53: ['Llovizna', 'drizzle'],
+  55: ['Llovizna intensa', 'drizzle'],
+  56: ['Llovizna helada', 'drizzle'],
+  57: ['Llovizna helada intensa', 'drizzle'],
+  61: ['Lluvia débil', 'rain'],
+  63: ['Lluvia', 'rain'],
+  65: ['Lluvia intensa', 'rain'],
+  66: ['Lluvia helada', 'rain'],
+  67: ['Lluvia helada intensa', 'rain'],
+  71: ['Nevada débil', 'snow'],
+  73: ['Nevada', 'snow'],
+  75: ['Nevada intensa', 'snow'],
+  77: ['Granizo fino', 'snow'],
+  80: ['Chubascos débiles', 'rain'],
+  81: ['Chubascos', 'rain'],
+  82: ['Chubascos violentos', 'rain'],
+  85: ['Chubascos de nieve', 'snow'],
+  86: ['Chubascos de nieve intensos', 'snow'],
+  95: ['Tormenta', 'storm'],
+  96: ['Tormenta con granizo', 'storm'],
+  99: ['Tormenta con granizo intenso', 'storm'],
 };
+
+export const describeCondition = (code: number): Condition => {
+  const [description, group] = CONDITIONS[code] ?? ['Desconocido', 'cloudy'];
+  return { code, description, group };
+};
+
+export interface SkyTheme {
+  top: string;
+  bottom: string;
+  accent: string;
+}
+
+/** Paleta del cielo según el estado y si es de día o de noche. */
+export const getSkyTheme = (group: ConditionGroup, isDay: boolean): SkyTheme => {
+  if (!isDay) {
+    switch (group) {
+      case 'clear':
+      case 'partly':
+        return { top: '#0e1a3d', bottom: '#04060d', accent: '#c7d2fe' };
+      case 'storm':
+        return { top: '#1d1733', bottom: '#040309', accent: '#c4b5fd' };
+      case 'snow':
+        return { top: '#27334a', bottom: '#070a11', accent: '#e0f2fe' };
+      case 'rain':
+      case 'drizzle':
+        return { top: '#12233a', bottom: '#03060c', accent: '#7dd3fc' };
+      default:
+        return { top: '#1b2230', bottom: '#05070b', accent: '#cbd5e1' };
+    }
+  }
+  switch (group) {
+    case 'clear':
+      return { top: '#1f6fd6', bottom: '#081a36', accent: '#ffc857' };
+    case 'partly':
+      return { top: '#3a6aa3', bottom: '#0a1629', accent: '#ffd27a' };
+    case 'cloudy':
+      return { top: '#465264', bottom: '#0c1118', accent: '#dbe3ee' };
+    case 'fog':
+      return { top: '#5b6573', bottom: '#101318', accent: '#e5e7eb' };
+    case 'drizzle':
+    case 'rain':
+      return { top: '#28476a', bottom: '#060c17', accent: '#7dd3fc' };
+    case 'snow':
+      return { top: '#7589a3', bottom: '#111722', accent: '#e0f2fe' };
+    case 'storm':
+      return { top: '#342b52', bottom: '#07060d', accent: '#c4b5fd' };
+  }
+};
+
+// Escala de color de temperatura (°C) compartida por el mapa, la semana y la curva horaria
+const TEMP_STOPS: Array<[number, [number, number, number]]> = [
+  [-15, [139, 92, 246]],
+  [-5, [96, 165, 250]],
+  [5, [34, 211, 238]],
+  [12, [52, 211, 153]],
+  [18, [163, 230, 53]],
+  [24, [250, 204, 21]],
+  [30, [251, 146, 60]],
+  [36, [239, 68, 68]],
+  [42, [190, 18, 60]],
+];
+
+export const tempColor = (celsius: number): string => {
+  const t = Math.max(TEMP_STOPS[0][0], Math.min(TEMP_STOPS[TEMP_STOPS.length - 1][0], celsius));
+  for (let i = 1; i < TEMP_STOPS.length; i++) {
+    const [t1, c1] = TEMP_STOPS[i];
+    const [t0, c0] = TEMP_STOPS[i - 1];
+    if (t <= t1) {
+      const k = (t - t0) / (t1 - t0);
+      const mix = c0.map((v, j) => Math.round(v + (c1[j] - v) * k));
+      return `rgb(${mix.join(' ')})`;
+    }
+  }
+  return 'rgb(190 18 60)';
+};
+
+export const TEMP_LEGEND = TEMP_STOPS.map(([t]) => t);

@@ -1,15 +1,16 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { WeatherProvider } from './context/WeatherContext';
+import './index.css';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Router>
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <WeatherProvider>
         <App />
       </WeatherProvider>
-    </Router>
-  </React.StrictMode>
+    </BrowserRouter>
+  </StrictMode>,
 );

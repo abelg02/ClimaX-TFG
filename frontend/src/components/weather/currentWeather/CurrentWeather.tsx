@@ -1,113 +1,95 @@
-// frontend/src/components/weather/currentWeather/CurrentWeather.tsx
-import { useNavigate } from 'react-router-dom';
-import styles from '../../../pages/home/Home.module.css';
+import type { Forecast, Place, Units } from '../../../types';
+import { useWeather } from '../../../context/WeatherContext';
+import { WeatherIcon } from '../weatherIcon/WeatherIcon';
+import { formatTemp, hourOf, longDate, placeSubtitle, toUnits } from '../../../utils/format';
+import styles from './CurrentWeather.module.css';
 
-type CurrentWeatherProps = {
-    data: {
-        location: {
-            name: string;
-            country: string;
-            region: string;
-            localtime: string;
-        };
-        current: {
-            temp_c: number;
-            condition: {
-                text: string;
-                icon: string;
-            };
-            feelslike_c: number;
-            humidity: number;
-            wind_kph: number;
-            wind_dir: string;
-            pressure_mb: number;
-            last_updated: string;
-        };
-    };
+type Props = { place: Place; forecast: Forecast };
+
+/** Frase corta que resume las próximas horas. */
+const summarize = (forecast: Forecast, units: Units) => {
+  const today = forecast.daily[0];
+  const hours = forecast.hourly;
+  const parts: string[] = [];
+
+  const peak = hours.slice(0, 14).reduce((a, b) => (b.temperature > a.temperature ? b : a), hours[0]);
+  if (peak && peak.temperature > forecast.current.temperature + 1) {
+    parts.push(`Subirá hasta ${formatTemp(peak.temperature, units)} hacia las ${hourOf(peak.time)}.`);
+  } else {
+    parts.push(`Máxima de ${formatTemp(today.temperatureMax, units)} y mínima de ${formatTemp(today.temperatureMin, units)} hoy.`);
+  }
+
+  const wet = hours.find((h) => h.precipitationProbability >= 50);
+  if (wet) {
+    parts.push(
+      wet === hours[0]
+        ? `Probabilidad de lluvia alta ahora mismo (${wet.precipitationProbability} %).`
+        : `Lluvia probable a partir de las ${hourOf(wet.time)} (${wet.precipitationProbability} %).`,
+    );
+  } else {
+    parts.push('Sin lluvia a la vista en las próximas 24 horas.');
+  }
+
+  if (forecast.current.windGusts >= 50) {
+    parts.push(`Rachas de hasta ${Math.round(forecast.current.windGusts)} km/h.`);
+  }
+  return parts.join(' ');
 };
 
-export const CurrentWeather = ({ data }: CurrentWeatherProps) => {
-    const navigate = useNavigate();
+export const CurrentWeather = ({ place, forecast }: Props) => {
+  const { units, isFavorite, toggleFavorite } = useWeather();
+  const { current, daily } = forecast;
+  const saved = isFavorite(place);
+  const subtitle = placeSubtitle(place);
 
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('es-ES', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
+  return (
+    <section className={`panel ${styles.hero}`} aria-labelledby="place-name">
+      <div className={styles.top}>
+        <p className="eyebrow">
+          Ahora · {longDate(current.time)} · {hourOf(current.time)} hora local
+        </p>
+        <button
+          type="button"
+          className={`${styles.save} ${saved ? styles.saved : ''}`}
+          onClick={() => toggleFavorite(place)}
+          aria-pressed={saved}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.9l-5.3 2.7 1-5.8-4.2-4.1 5.9-.9z"
+              fill={saved ? 'currentColor' : 'none'}
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {saved ? 'Guardado' : 'Guardar'}
+        </button>
+      </div>
 
-    const handleRegionClick = () => {
-      navigate(`/map/${encodeURIComponent(data.location.region)}`, {
-        state: {
-          cityData: {
-            name: data.location.name,
-            lat: data.location.lat,
-            lon: data.location.lon
-          }
-        }
-      });
-    };
+      <h1 id="place-name" className={styles.place}>
+        {place.name}
+      </h1>
+      {subtitle && <p className={styles.region}>{subtitle}</p>}
 
-    return (
-            <div className={styles.weatherCard}>
-                <div style={{ position: 'absolute', top: '20px', right: '20px', fontSize: '1.5rem' }}>🌡️</div>
-
-                <div style={{ marginBottom: '20px' }}>
-                    <h2 style={{ margin: '0 0 5px 0', fontSize: '1.8rem', fontWeight: '600' }}>
-                        {data.location.name}, {data.location.country}
-                    </h2>
-                    <p style={{ margin: '0', color: '#666', fontSize: '0.9rem' }}>
-                        <span
-                            onClick={handleRegionClick}
-                            style={{ cursor: 'pointer', textDecoration: 'underline' }}>
-                        {data.location.region}
-                    </span> • {formatDate(data.current.last_updated)}
-                    </p>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-                <img
-                    src={`https:${data.current.condition.icon}`}
-                    alt={data.current.condition.text}
-                    style={{ width: '80px', height: '80px' }}
-                />
-                <div style={{ marginLeft: '20px' }}>
-                    <p style={{ margin: '0', fontSize: '3rem', fontWeight: '300', lineHeight: '1' }}>
-                        {data.current.temp_c}°
-                        <span style={{ fontSize: '1.5rem', verticalAlign: 'top' }}>C</span>
-                    </p>
-                    <p style={{ margin: '5px 0 0 0', fontSize: '1.1rem', color: '#666' }}>
-                        {data.current.condition.text}
-                    </p>
-                </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: 'auto' }}>
-                <div>
-                    <p style={{ margin: '5px 0', color: '#666' }}>
-                        <span style={{ marginRight: '5px' }}>🌡️</span>
-                        <strong>Sensación:</strong> {data.current.feelslike_c}°C
-                    </p>
-                    <p style={{ margin: '5px 0', color: '#666' }}>
-                        <span style={{ marginRight: '5px' }}>💧</span>
-                        <strong>Humedad:</strong> {data.current.humidity}%
-                    </p>
-                </div>
-                <div>
-                    <p style={{ margin: '5px 0', color: '#666' }}>
-                        <span style={{ marginRight: '5px' }}>🌬️</span>
-                        <strong>Viento:</strong> {data.current.wind_kph} km/h {data.current.wind_dir}
-                    </p>
-                    <p style={{ margin: '5px 0', color: '#666' }}>
-                        <span style={{ marginRight: '5px' }}>📊</span>
-                        <strong>Presión:</strong> {data.current.pressure_mb} mb
-                    </p>
-                </div>
-            </div>
+      <div className={styles.reading}>
+        <p className={styles.temp} aria-label={`${Math.round(toUnits(current.temperature, units))} grados`}>
+          {Math.round(toUnits(current.temperature, units))}
+          <span className={styles.deg}>°</span>
+        </p>
+        <div className={styles.iconWrap}>
+          <WeatherIcon group={current.condition.group} isDay={current.isDay} size={148} />
         </div>
-    );
+      </div>
+
+      <p className={styles.condition}>{current.condition.description}</p>
+      <p className={`${styles.meta} mono`}>
+        <span>Sensación {formatTemp(current.apparentTemperature, units)}</span>
+        <span>Máx {formatTemp(daily[0].temperatureMax, units)}</span>
+        <span>Mín {formatTemp(daily[0].temperatureMin, units)}</span>
+      </p>
+
+      <p className={styles.summary}>{summarize(forecast, units)}</p>
+    </section>
+  );
 };

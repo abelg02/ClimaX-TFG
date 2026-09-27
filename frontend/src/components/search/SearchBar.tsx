@@ -1,163 +1,206 @@
-// frontend/src/components/search/SearchBar.tsx
-import { useState, useEffect, useRef } from 'react';
-import type { FormEvent } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import type { Place } from '../../types';
+import { reversePlace, searchPlaces } from '../../services/weatherService';
+import { placeToSearch } from '../../utils/placeUrl';
+import { placeSubtitle } from '../../utils/format';
 import styles from './SearchBar.module.css';
 
-type SearchBarProps = {
-    onSearch: (city: string) => void;
-    loading: boolean;
-    onSettingsClick?: () => void;
-    onLogoClick?: () => void;
-};
+/** Buscador con sugerencias (combobox accesible) y botón de ubicación actual. */
+export const SearchBar = () => {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const listId = useId();
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Place[]>([]);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [searching, setSearching] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-type Suggestion = {
-    display_name: string;
-    lat: string;
-    lon: string;
-};
-
-export const SearchBar = ({ onSearch, loading, onSettingsClick, onLogoClick }: SearchBarProps) => {
-    const [city, setCity] = useState('');
-    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
-    const searchRef = useRef<HTMLDivElement>(null);
-
-    const fetchSuggestions = async (query: string) => {
-        if (query.length < 2) {
-            setSuggestions([]);
-            return;
-        }
-
-        try {
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=5`
-            );
-            const data = await response.json();
-            setSuggestions(data);
-        } catch (error) {
-            console.error('Error fetching suggestions:', error);
-            setSuggestions([]);
-        }
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) {
+      setResults([]);
+      setSearching(false);
+      return;
+    }
+    const controller = new AbortController();
+    setSearching(true);
+    const timer = setTimeout(() => {
+      searchPlaces(q, controller.signal)
+        .then((places) => {
+          setResults(places);
+          setActive(places.length ? 0 : -1);
+          setSearching(false);
+        })
+        .catch((err: Error) => {
+          if (err.name !== 'AbortError') {
+            setResults([]);
+            setSearching(false);
+          }
+        });
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
     };
+  }, [query]);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            fetchSuggestions(city);
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [city]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-                setShowSuggestions(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const handleSubmit = (e: FormEvent) => {
+  useEffect(() => {
+    const onPointerDown = (e: PointerEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onShortcut = (e: globalThis.KeyboardEvent) => {
+      const typing = (e.target as HTMLElement).closest('input, textarea');
+      if (e.key === '/' && !typing) {
         e.preventDefault();
-        if (city.trim()) {
-            onSearch(city);
-            setShowSuggestions(false);
+        inputRef.current?.focus();
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onShortcut);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onShortcut);
+    };
+  }, []);
+
+  const go = (place: Place) => {
+    // En el mapa, buscar centra el mapa; en el resto abre la previsión
+    navigate({ pathname: pathname === '/mapa' ? '/mapa' : '/', search: placeToSearch(place) });
+    setQuery('');
+    setResults([]);
+    setOpen(false);
+    inputRef.current?.blur();
+  };
+
+  const locate = () => {
+    if (!navigator.geolocation) {
+      setNotice('Tu navegador no permite la geolocalización');
+      return;
+    }
+    setLocating(true);
+    setNotice(null);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          go(await reversePlace(coords.latitude, coords.longitude));
+        } finally {
+          setLocating(false);
         }
-    };
-
-    const handleSuggestionClick = (suggestion: Suggestion) => {
-        setCity(suggestion.display_name);
-        onSearch(suggestion.display_name);
-        setShowSuggestions(false);
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (suggestions.length === 0) return;
-
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            setSelectedSuggestion(prev =>
-                prev < suggestions.length - 1 ? prev + 1 : prev
-            );
-        } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            setSelectedSuggestion(prev =>
-                prev > 0 ? prev - 1 : 0
-            );
-        } else if (e.key === 'Enter' && selectedSuggestion >= 0) {
-            e.preventDefault();
-            handleSuggestionClick(suggestions[selectedSuggestion]);
-        }
-    };
-
-    return (
-        <div className={styles.searchContainer} ref={searchRef}>
-            <a
-                href="/"
-                className={styles.appTitle}
-                onClick={(e) => {
-                    e.preventDefault();
-                    onLogoClick?.();
-                }}
-            >
-                <span>🌤</span> ClimaX
-            </a>
-
-            <form onSubmit={handleSubmit} className={styles.searchForm}>
-                <div className={styles.searchInputWrapper}>
-                    <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => {
-                            setCity(e.target.value);
-                            setShowSuggestions(true);
-                            setSelectedSuggestion(-1);
-                        }}
-                        onFocus={() => setShowSuggestions(true)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Buscar ciudad..."
-                        className={styles.searchInput}
-                    />
-                    {showSuggestions && suggestions.length > 0 && (
-                        <div className={styles.suggestionsDropdown}>
-                            {suggestions.map((suggestion, index) => (
-                                <div
-                                    key={`${suggestion.lat},${suggestion.lon}`}
-                                    className={`${styles.suggestionItem} ${
-                                        index === selectedSuggestion ? styles.selectedSuggestion : ''
-                                    }`}
-                                    onClick={() => handleSuggestionClick(suggestion)}
-                                >
-                                    {suggestion.display_name.split(',').slice(0, 3).join(',')}
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
-                <button
-                    type="submit"
-                    disabled={loading || !city.trim()}
-                    className={styles.searchButton}
-                >
-                    {loading ? 'Buscando...' : 'Buscar'}
-                </button>
-            </form>
-
-            <button
-                className={styles.settingsButton}
-                style={{
-                    opacity: 0,
-                    pointerEvents: 'none',
-                    cursor: 'default'
-                }}
-            >
-                ⚙️
-            </button>
-        </div>
+      },
+      () => {
+        setLocating(false);
+        setNotice('No se ha podido obtener tu ubicación');
+      },
+      { timeout: 10000, maximumAge: 600000 },
     );
+  };
+
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+      setActive((i) => Math.min(results.length - 1, i + 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((i) => Math.max(0, i - 1));
+    } else if (e.key === 'Enter' && results[active]) {
+      e.preventDefault();
+      go(results[active]);
+    } else if (e.key === 'Escape') {
+      setOpen(false);
+      inputRef.current?.blur();
+    }
+  };
+
+  const showList = open && query.trim().length >= 2;
+
+  return (
+    <div className={styles.root} ref={rootRef}>
+      <div className={styles.field}>
+        <svg className={styles.glass} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" strokeLinecap="round" />
+        </svg>
+        <input
+          ref={inputRef}
+          type="search"
+          role="combobox"
+          aria-expanded={showList}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={showList && active >= 0 ? `${listId}-${active}` : undefined}
+          aria-label="Buscar una ciudad"
+          placeholder="Busca una ciudad…"
+          autoComplete="off"
+          spellCheck={false}
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+            setNotice(null);
+          }}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onKeyDown}
+        />
+        <kbd className={styles.kbd} aria-hidden="true">
+          /
+        </kbd>
+        <button
+          type="button"
+          className={styles.locate}
+          onClick={locate}
+          disabled={locating}
+          aria-label="Usar mi ubicación"
+          title="Usar mi ubicación"
+        >
+          {locating ? (
+            <span className={styles.spinner} />
+          ) : (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <circle cx="12" cy="12" r="3.2" />
+              <path d="M12 2v3M12 19v3M2 12h3M19 12h3" strokeLinecap="round" />
+              <circle cx="12" cy="12" r="7" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {showList && (
+        <ul id={listId} role="listbox" className={styles.list}>
+          {results.map((place, i) => (
+            <li
+              key={`${place.latitude},${place.longitude}`}
+              id={`${listId}-${i}`}
+              role="option"
+              aria-selected={i === active}
+              className={i === active ? styles.activeOption : undefined}
+              onPointerEnter={() => setActive(i)}
+              onClick={() => go(place)}
+            >
+              <span className={styles.name}>{place.name}</span>
+              <span className={styles.sub}>{placeSubtitle(place)}</span>
+              {place.countryCode && <span className={styles.cc}>{place.countryCode}</span>}
+            </li>
+          ))}
+          {!results.length && (
+            <li className={styles.empty} aria-disabled="true">
+              {searching ? 'Buscando…' : 'Sin resultados. Prueba con otro nombre.'}
+            </li>
+          )}
+        </ul>
+      )}
+      {notice && (
+        <p className={styles.notice} role="status">
+          {notice}
+        </p>
+      )}
+    </div>
+  );
 };

@@ -1,35 +1,46 @@
-// src/main/java/com/example/climaxtfg/services/WeatherService.java
 package com.example.climaxtfg.services;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.util.concurrent.CompletableFuture;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
+
+import com.example.climaxtfg.client.OpenMeteoClient;
+import com.example.climaxtfg.exception.ExternalServiceException;
+import com.example.climaxtfg.model.Forecast;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 public class WeatherService {
 
-    @Value("${weatherapi.key}")
-    private String apiKey;
+    private static final Logger log = LoggerFactory.getLogger(WeatherService.class);
 
-    private final RestTemplate restTemplate;
+    private final OpenMeteoClient client;
 
-    public WeatherService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public WeatherService(OpenMeteoClient client) {
+        this.client = client;
     }
 
-    // Modifica el método getWeatherForCity para incluir AQI
-    public String getWeatherForCity(String city) {
-        String url = UriComponentsBuilder
-                .fromHttpUrl("https://api.weatherapi.com/v1/forecast.json")
-                .queryParam("key", apiKey)
-                .queryParam("q", city)
-                .queryParam("days", 7)
-                .queryParam("lang", "es")
-                .queryParam("aqi", "yes")
-                .queryParam("alerts", "no")
-                .toUriString();
+    /**
+     * Previsión + calidad del aire, pedidas en paralelo. Si la calidad del aire
+     * falla, se devuelve la previsión igualmente (es un dato secundario).
+     */
+    @Cacheable("forecast")
+    public Forecast getForecast(double latitude, double longitude) {
+        var air = CompletableFuture.supplyAsync(() -> client.airQuality(latitude, longitude));
+        JsonNode forecast = client.forecast(latitude, longitude);
 
-        return restTemplate.getForObject(url, String.class);
+        JsonNode airQuality = null;
+        try {
+            airQuality = air.join();
+        } catch (Exception e) {
+            log.warn("Calidad del aire no disponible para {},{}", latitude, longitude);
+        }
+        if (!forecast.has("current")) {
+            throw new ExternalServiceException("La previsión no contiene datos actuales");
+        }
+        return ForecastMapper.toForecast(forecast, airQuality);
     }
 }

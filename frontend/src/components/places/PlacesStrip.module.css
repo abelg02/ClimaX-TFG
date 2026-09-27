@@ -1,0 +1,66 @@
+.strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 40px;
+  padding: 20px 22px;
+}
+
+.group ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.group a {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 15px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.group a:hover {
+  border-color: var(--text);
+}
+
+.group a[aria-current='page'] {
+  background: var(--text);
+  color: var(--ink-0);
+  border-color: var(--text);
+}
+
+.fav {
+  display: flex;
+  align-items: center;
+}
+
+.fav a {
+  border-radius: 999px 0 0 999px;
+  border-right: 0;
+}
+
+.fav button {
+  height: 36px;
+  padding: 0 12px 0 8px;
+  border: 1px solid var(--line-strong);
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+  color: var(--faint);
+}
+
+.fav button:hover {
+  color: var(--danger);
+}
+
+.group a.mapLink {
+  border-style: dashed;
+  color: var(--accent);
+}
